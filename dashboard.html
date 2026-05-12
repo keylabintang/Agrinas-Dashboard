@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Monitoring Progres Revitalisasi Sekolah</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <style>
+    :root {
+      --navy: #0d1b3f;
+      --muted: #667085;
+      --line: #e8edf5;
+      --card: #ffffff;
+      --green: #2fc94d;
+      --green-dark: #0e8f2e;
+      --blue: #2f93e8;
+      --orange: #ff9f1a;
+      --purple: #8b4be8;
+      --teal: #14a6a6;
+      --red: #ff4d67;
+      --yellow: #f8b22d;
+      --shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+      --soft-shadow: 0 10px 22px rgba(15, 23, 42, 0.045);
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #fbfcff;
+      color: var(--navy);
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+      background: #f3f6fb;
+    }
+
+    .sidebar-frame {
+      width: 320px;
+      min-width: 320px;
+      height: 100vh;
+      border: 0;
+      background: #ffffff;
+      position: sticky;
+      top: 0;
+    }
+
+    .app-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .page {
+      width: min(100% - clamp(24px, 3.6vw, 56px), 1480px);
+      margin: clamp(16px, 2vw, 28px) auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin: 0 0 24px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(32px, 3vw, 44px);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      font-weight: 800;
+    }
+
+    .subtitle {
+      color: #24345d;
+      margin-top: 6px;
+      font-size: clamp(15px, 1.4vw, 18px);
+      font-weight: 500;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 64px;
+      padding: 16px 28px;
+      border-radius: 15px;
+      background: #fff;
+      border: 1px solid #dbe4ef;
+      color: #0d1b3f;
+      font-size: 16px;
+      font-weight: 700;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.035);
+      white-space: nowrap;
+    }
+
+    .btn-filter {
+      color: #0e8f2e;
+      border-color: rgba(14, 143, 46, 0.42);
+      box-shadow: 0 6px 18px rgba(21, 128, 61, 0.09);
+    }
+
+    .section-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 2vw, 26px);
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 4px;
+    }
+
+    .section-subtitle {
+      font-size: 14px;
+      color: #263961;
+      font-weight: 600;
+      margin-bottom: 18px;
+    }
+
+    .geo-grid {
+      display: grid;
+      grid-template-columns: minmax(250px, 320px) 1px minmax(0, 1fr);
+      gap: clamp(20px, 2vw, 28px);
+      align-items: center;
+      min-height: 288px;
+    }
+
+    .divider {
+      height: 250px;
+      background: #dbe4ef;
+      border-radius: 1px;
+    }
+
+    .metric-stack {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .metric-card {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-height: 84px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(120deg, rgba(255,255,255,0.96), rgba(250,253,255,0.92));
+      box-shadow: var(--soft-shadow);
+      padding: 14px 16px;
+    }
+
+    .metric-card.green {
+      border-color: rgba(46, 204, 64, 0.18);
+      background: linear-gradient(120deg, #ffffff 0%, #fbfff5 100%);
+    }
+
+    .metric-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      color: var(--green-dark);
+      background: #eaffea;
+    }
+
+    .metric-label {
+      font-size: 14px;
+      color: #314164;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .metric-value {
+      margin-top: 4px;
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+    }
+
+    .map-wrap {
+      position: relative;
+      height: clamp(280px, 34vw, 420px);
+      overflow: hidden;
+      min-width: 0;
+      border-radius: 22px;
+      border: 1px solid rgba(47, 201, 77, 0.12);
+      background: linear-gradient(180deg, #f7fcff 0%, #eef7fb 100%);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+    }
+
+    .map-wrap svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .leaflet-container {
+      width: 100%;
+      height: 100%;
+      font: inherit;
+      background: #e9f5ff;
+    }
+
+    .leaflet-control-zoom {
+      border: 0 !important;
+      box-shadow: 0 12px 22px rgba(15, 23, 42, 0.12) !important;
+    }
+
+    .leaflet-control-zoom a {
+      width: 38px !important;
+      height: 38px !important;
+      line-height: 38px !important;
+      color: var(--navy) !important;
+      border: 1px solid #d9e4f0 !important;
+    }
+
+    .leaflet-popup-content-wrapper,
+    .leaflet-popup-tip {
+      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
+    }
+
+    .leaflet-popup-content {
+      margin: 12px 14px;
+      font-size: 13px;
+      color: #24345d;
+    }
+
+    .school-marker-icon {
+      background: transparent;
+      border: 0;
+    }
+
+    .school-marker {
+      width: 28px;
+      height: 28px;
+      position: relative;
+      display: block;
+    }
+
+    .school-marker::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50% 50% 50% 0;
+      background: linear-gradient(180deg, #14a63e 0%, #118b32 100%);
+      transform: rotate(-45deg);
+      transform-origin: center;
+      box-shadow: 0 7px 16px rgba(17, 139, 50, 0.32);
+    }
+
+    .school-marker::after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ffffff;
+      top: 7px;
+      left: 7px;
+      box-shadow: 0 0 0 1px rgba(17, 139, 50, 0.08);
+    }
+
+    .island {
+      fill: #dff3de;
+      stroke: rgba(45, 167, 76, 0.12);
+      stroke-width: 2;
+      filter: drop-shadow(0 6px 11px rgba(46, 125, 50, 0.05));
+    }
+
+    .pin {
+      fill: #0a9131;
+      stroke: white;
+      stroke-width: 4;
+      filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.08));
+    }
+
+    .pin-dot {
+      fill: white;
+    }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+      margin-bottom: 20px;
+    }
+
+    .kpi-card {
+      min-height: 106px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: #fff;
+      box-shadow: var(--soft-shadow);
+      min-width: 0;
+    }
+
+    .kpi-card.green-tint { background: linear-gradient(120deg, #ffffff, #f3fff3); border-color: rgba(47, 201, 77, 0.24); }
+    .kpi-card.blue-tint { background: linear-gradient(120deg, #ffffff, #f4faff); border-color: rgba(47, 147, 232, 0.18); }
+    .kpi-card.orange-tint { background: linear-gradient(120deg, #ffffff, #fff9ef); border-color: rgba(255, 159, 26, 0.22); }
+    .kpi-card.purple-tint { background: linear-gradient(120deg, #ffffff, #fbf6ff); border-color: rgba(139, 75, 232, 0.2); }
+    .kpi-card.teal-tint { background: linear-gradient(120deg, #ffffff, #f2feff); border-color: rgba(20, 166, 166, 0.2); }
+    .kpi-card.red-tint { background: linear-gradient(120deg, #ffffff, #fff5f5); border-color: rgba(255, 77, 103, 0.22); }
+    .kpi-card.yellow-tint { background: linear-gradient(120deg, #ffffff, #fffbf0); border-color: rgba(248, 178, 45, 0.22); }
+
+    .kpi-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      background: currentColor;
+    }
+
+    .kpi-icon svg {
+      color: white;
+      width: 27px;
+      height: 27px;
+      stroke-width: 2.7;
+    }
+
+    .kpi-icon.soft {
+      background: color-mix(in srgb, currentColor 11%, white 89%);
+    }
+
+    .kpi-icon.soft svg {
+      color: currentColor;
+    }
+
+    .kpi-content small {
+      display: block;
+      font-size: 11px;
+      color: #314164;
+      font-weight: 800;
+      line-height: 1.22;
+      margin-bottom: 8px;
+    }
+
+    .kpi-content strong {
+      display: block;
+      font-size: 25px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+    }
+
+    .chart-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: #ffffff;
+      box-shadow: var(--soft-shadow);
+      padding: 20px 22px 12px;
+      min-height: 360px;
+      min-width: 0;
+    }
+
+    .chart-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 15px;
+    }
+
+    .chart-card svg {
+      width: 100%;
+      height: 285px;
+      overflow: visible;
+    }
+
+    .axis-text,
+    .legend-text {
+      fill: #1b2a4c;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .gridline {
+      stroke: #eef2f7;
+      stroke-width: 1;
+    }
+
+    .chart-value {
+      fill: #0d1b3f;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .donut-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+    }
+
+    .donut-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      box-shadow: var(--soft-shadow);
+      background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(249,255,248,0.72));
+      padding: 22px 26px;
+      min-height: 245px;
+    }
+
+    .donut-card.purple-bg {
+      background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(253,245,255,0.78));
+    }
+
+    .donut-flex {
+      display: grid;
+      grid-template-columns: minmax(170px, 205px) minmax(0, 1fr);
+      align-items: center;
+      gap: clamp(24px, 3vw, 46px);
+      margin-top: 20px;
+    }
+
+    .donut {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      position: relative;
+      margin: 0 auto;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.02), 0 8px 18px rgba(15, 23, 42, 0.05);
+    }
+
+    .donut::after {
+      content: "";
+      position: absolute;
+      inset: 43px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.04);
+    }
+
+    .donut-center {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .donut-center span {
+      display: block;
+      font-size: 14px;
+      color: #293a5f;
+      font-weight: 700;
+    }
+
+    .donut-center strong {
+      display: block;
+      margin-top: 5px;
+      font-size: 25px;
+      font-weight: 850;
+      letter-spacing: -0.04em;
+    }
+
+    .legend-list {
+      display: grid;
+      gap: 18px;
+      font-size: clamp(15px, 1.4vw, 17px);
+      font-weight: 700;
+      color: #213253;
+      min-width: 0;
+    }
+
+    .legend-item {
+      display: grid;
+      grid-template-columns: 16px 1fr;
+      gap: 15px;
+      align-items: start;
+      line-height: 1.45;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      margin-top: 6px;
+      background: currentColor;
+    }
+
+    .material-kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 28px;
+      margin-top: 24px;
+      margin-bottom: 18px;
+    }
+
+    .wide-kpi {
+      min-height: 90px;
+      padding: 16px 28px;
+    }
+
+    .wide-kpi .kpi-icon {
+      width: 60px;
+      height: 60px;
+    }
+
+    .wide-kpi .kpi-content small {
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .wide-kpi .kpi-content strong {
+      font-size: 28px;
+    }
+
+    .material-chart {
+      min-height: 238px;
+      padding-top: 22px;
+    }
+
+    .material-chart .chart-title {
+      text-align: center;
+      margin-bottom: 0;
+    }
+
+    .material-chart .donut-flex {
+      grid-template-columns: minmax(160px, 1fr) minmax(240px, 350px);
+      width: min(100%, 600px);
+      margin: 14px auto 0;
+      gap: 36px;
+    }
+
+    .material-chart .donut {
+      width: 160px;
+      height: 160px;
+    }
+
+    .material-chart .donut::after {
+      inset: 41px;
+    }
+
+    .green-color { color: var(--green); }
+    .green-dark-color { color: var(--green-dark); }
+    .blue-color { color: var(--blue); }
+    .orange-color { color: var(--orange); }
+    .purple-color { color: var(--purple); }
+    .teal-color { color: var(--teal); }
+    .red-color { color: var(--red); }
+    .yellow-color { color: var(--yellow); }
+
+    @media (max-width: 1100px) {
+      .topbar { flex-direction: column; gap: 18px; }
+      .actions { justify-content: flex-start; }
+      .geo-grid { grid-template-columns: 1fr; }
+      .divider { display: none; }
+      .material-chart .donut-flex { width: auto; grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar-frame {
+        width: 100%;
+        min-width: 100%;
+        height: 100vh;
+        position: static;
+      }
+
+      .page { width: min(100% - 20px, 100%); }
+      .actions { gap: 10px; }
+      .btn { width: 100%; min-height: 54px; padding: 14px 18px; justify-content: center; }
+      h1 { font-size: 30px; }
+      .geo-grid { gap: 18px; }
+      .metric-card,
+      .kpi-card { padding: 14px; }
+      .kpi-row,
+      .chart-grid,
+      .donut-grid,
+      .material-kpis { grid-template-columns: 1fr; }
+      .donut-flex { grid-template-columns: 1fr; gap: 24px; }
+      .chart-card svg { height: 235px; }
+      .material-chart .donut-flex { gap: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <iframe
+      class="sidebar-frame"
+      src="sidebar.html?page=dashboard.html"
+      title="Sidebar Navigation"
+    ></iframe>
+
+    <main class="app-main">
+      <div class="page">
+    <header class="topbar">
+      <div>
+        <h1>Dashboard</h1>
+        <p class="subtitle">Monitoring progres revitalisasi sekolah</p>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-filter" type="button" aria-label="Filter">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 5h16l-6.2 7v5.2l-3.6 1.8V12L4 5Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+          </svg>
+          Filter
+        </button>
+        <button class="btn" type="button" aria-label="Rentang tanggal">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M7 3v4M17 3v4M4.5 9h15M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          1 - 31 Mei 2024
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m7 10 5 5 5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <section class="section-card">
+      <h2 class="section-title">Geotagging Location</h2>
+      <p class="section-subtitle">Persebaran pembangunan sekolah</p>
+
+      <div class="geo-grid">
+        <div class="metric-stack">
+          <div class="metric-card green">
+            <div class="metric-icon">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 22s7-6.12 7-13A7 7 0 0 0 5 9c0 6.88 7 13 7 13Z" fill="currentColor" />
+                <circle cx="12" cy="9" r="2.6" fill="#fff" />
+              </svg>
+            </div>
+            <div>
+              <div class="metric-label">Total Titik</div>
+              <div class="metric-value">1.245</div>
+            </div>
+          </div>
+
+          <div class="metric-card green">
+            <div class="metric-icon">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 7a5 5 0 0 1 0 10M12 17a5 5 0 0 1 0-10M8 4.5A9 9 0 0 0 8 19.5M16 4.5a9 9 0 0 1 0 15M12 10.8v2.4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div>
+              <div class="metric-label">Aktif</div>
+              <div class="metric-value">892</div>
+            </div>
+          </div>
+
+          <div class="metric-card green">
+            <div class="metric-icon">
+              <svg width="35" height="35" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="8.8" stroke="currentColor" stroke-width="2.2" />
+                <path d="m8 12.2 2.5 2.6L16.6 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <div>
+              <div class="metric-label">Selesai</div>
+              <div class="metric-value">353</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="map-wrap" aria-label="Peta Indonesia dengan marker lokasi sekolah">
+          <div id="geotagging-map" role="img" aria-label="Peta interaktif Indonesia dengan titik lokasi sekolah"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <h2 class="section-title">Review Harga Satuan</h2>
+
+      <div class="kpi-row">
+        <div class="kpi-card green-tint">
+          <div class="kpi-icon soft green-color">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21a9 9 0 1 0-8.9-7.7" stroke="currentColor" stroke-linecap="round"/><path d="M8 12.4 10.5 15 17 8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 12h4M12 3v4" stroke="currentColor" stroke-linecap="round"/></svg>
+          </div>
+          <div class="kpi-content"><small>Total Target<br>Sekolah</small><strong>1.240</strong></div>
+        </div>
+        <div class="kpi-card blue-tint">
+          <div class="kpi-icon soft blue-color">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v11" stroke="currentColor" stroke-linecap="round"/><path d="m7 10 5 5 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 20h14" stroke="currentColor" stroke-linecap="round"/></svg>
+          </div>
+          <div class="kpi-content"><small>Data Masuk<br>Sekolah</small><strong>980</strong></div>
+        </div>
+        <div class="kpi-card orange-tint">
+          <div class="kpi-icon soft orange-color">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke="currentColor"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="kpi-content"><small>Data Belum<br>Diproses</small><strong>120</strong></div>
+        </div>
+        <div class="kpi-card purple-tint">
+          <div class="kpi-icon soft purple-color">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-linejoin="round"/><path d="M14 3v5h4M9 12h6M9 16h6M9 8h2" stroke="currentColor" stroke-linecap="round"/></svg>
+          </div>
+          <div class="kpi-content"><small>Data Dalam<br>Proses Review</small><strong>210</strong></div>
+        </div>
+        <div class="kpi-card teal-tint">
+          <div class="kpi-icon soft teal-color">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 4v3M18 4v3M4.5 9h15M6 6h12a2 2 0 0 1 2 2v11H4V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linecap="round"/><path d="M9 13h2M14 13h2M9 17h2" stroke="currentColor" stroke-linecap="round"/></svg>
+          </div>
+          <div class="kpi-content"><small>Data Dalam<br>Proses Perencanaan</small><strong>150</strong></div>
+        </div>
+        <div class="kpi-card green-tint">
+          <div class="kpi-icon soft green-color">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.7" stroke="currentColor"/><path d="m8 12 2.7 2.8L16.8 8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="kpi-content"><small>Selesai</small><strong>620</strong></div>
+        </div>
+        <div class="kpi-card red-tint">
+          <div class="kpi-icon soft red-color">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.7" stroke="currentColor"/><path d="m9 9 6 6M15 9l-6 6" stroke="currentColor" stroke-linecap="round"/></svg>
+          </div>
+          <div class="kpi-content"><small>Tidak Bisa<br>Dianalisa</small><strong>45</strong></div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3 class="chart-title">Data Masuk vs Data Selesai</h3>
+          <svg viewBox="0 0 520 300" role="img" aria-label="Bar chart data masuk dan data selesai">
+            <line class="gridline" x1="56" y1="240" x2="500" y2="240" />
+            <line class="gridline" x1="56" y1="202" x2="500" y2="202" />
+            <line class="gridline" x1="56" y1="164" x2="500" y2="164" />
+            <line class="gridline" x1="56" y1="126" x2="500" y2="126" />
+            <line class="gridline" x1="56" y1="88" x2="500" y2="88" />
+            <line class="gridline" x1="56" y1="50" x2="500" y2="50" />
+            <text class="axis-text" x="22" y="244">0</text>
+            <text class="axis-text" x="18" y="206">250</text>
+            <text class="axis-text" x="18" y="168">500</text>
+            <text class="axis-text" x="18" y="130">750</text>
+            <text class="axis-text" x="13" y="92">1.000</text>
+            <text class="axis-text" x="13" y="54">1.500</text>
+            <rect x="205" y="24" width="13" height="13" fill="#2fc94d" rx="2" /><text class="legend-text" x="226" y="36">Data Masuk</text>
+            <rect x="322" y="24" width="13" height="13" fill="#2f93e8" rx="2" /><text class="legend-text" x="343" y="36">Data Selesai</text>
+
+            <rect x="95" y="170" width="20" height="70" fill="#2fc94d" rx="3" /><text class="chart-value" x="89" y="160">320</text>
+            <rect x="130" y="198" width="20" height="42" fill="#2f93e8" rx="3" /><text class="chart-value" x="127" y="188">180</text>
+            <text class="axis-text" x="111" y="268">Jan</text>
+
+            <rect x="195" y="132" width="20" height="108" fill="#2fc94d" rx="3" /><text class="chart-value" x="190" y="122">540</text>
+            <rect x="230" y="174" width="20" height="66" fill="#2f93e8" rx="3" /><text class="chart-value" x="225" y="164">310</text>
+            <text class="axis-text" x="211" y="268">Feb</text>
+
+            <rect x="295" y="96" width="20" height="144" fill="#2fc94d" rx="3" /><text class="chart-value" x="289" y="86">780</text>
+            <rect x="330" y="158" width="20" height="82" fill="#2f93e8" rx="3" /><text class="chart-value" x="324" y="148">430</text>
+            <text class="axis-text" x="313" y="268">Mar</text>
+
+            <rect x="395" y="66" width="20" height="174" fill="#2fc94d" rx="3" /><text class="chart-value" x="388" y="56">960</text>
+            <rect x="430" y="126" width="20" height="114" fill="#2f93e8" rx="3" /><text class="chart-value" x="424" y="116">560</text>
+            <text class="axis-text" x="414" y="268">Apr</text>
+
+            <rect x="480" y="40" width="20" height="200" fill="#2fc94d" rx="3" /><text class="chart-value" x="474" y="30">1.180</text>
+            <rect x="515" y="106" width="20" height="134" fill="#2f93e8" rx="3" transform="translate(-20 0)" /><text class="chart-value" x="496" y="96">620</text>
+            <text class="axis-text" x="492" y="268">Mei</text>
+          </svg>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">Nilai Pengajuan vs Nilai Review</h3>
+          <svg viewBox="0 0 520 300" role="img" aria-label="Line chart nilai pengajuan dan nilai review">
+            <line class="gridline" x1="56" y1="240" x2="500" y2="240" />
+            <line class="gridline" x1="56" y1="202" x2="500" y2="202" />
+            <line class="gridline" x1="56" y1="164" x2="500" y2="164" />
+            <line class="gridline" x1="56" y1="126" x2="500" y2="126" />
+            <line class="gridline" x1="56" y1="88" x2="500" y2="88" />
+            <line class="gridline" x1="56" y1="50" x2="500" y2="50" />
+            <text class="axis-text" x="22" y="244">0</text>
+            <text class="axis-text" x="18" y="206">300</text>
+            <text class="axis-text" x="18" y="168">600</text>
+            <text class="axis-text" x="18" y="130">900</text>
+            <text class="axis-text" x="13" y="92">1.200</text>
+            <text class="axis-text" x="13" y="54">1.500</text>
+            <circle cx="205" cy="30" r="6" fill="#2fc94d" /><text class="legend-text" x="218" y="35">Nilai Pengajuan (IDR)</text>
+            <circle cx="365" cy="30" r="6" fill="#8b4be8" /><text class="legend-text" x="378" y="35">Nilai Review (IDR)</text>
+            <polyline points="80,188 180,164 280,138 380,100 480,62" fill="none" stroke="#16a334" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+            <polyline points="80,225 180,204 280,188 380,156 480,118" fill="none" stroke="#8b4be8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+            <g fill="#16a334"><circle cx="80" cy="188" r="7"/><circle cx="180" cy="164" r="7"/><circle cx="280" cy="138" r="7"/><circle cx="380" cy="100" r="7"/><circle cx="480" cy="62" r="7"/></g>
+            <g fill="#8b4be8"><circle cx="80" cy="225" r="7"/><circle cx="180" cy="204" r="7"/><circle cx="280" cy="188" r="7"/><circle cx="380" cy="156" r="7"/><circle cx="480" cy="118" r="7"/></g>
+            <text class="axis-text" x="71" y="268">Jan</text><text class="axis-text" x="171" y="268">Feb</text><text class="axis-text" x="270" y="268">Mar</text><text class="axis-text" x="371" y="268">Apr</text><text class="axis-text" x="471" y="268">Mei</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <h2 class="section-title">Perencanaan</h2>
+
+      <div class="kpi-row">
+        <div class="kpi-card green-tint"><div class="kpi-icon soft green-color"><svg viewBox="0 0 24 24" fill="none"><path d="M7 3v4M17 3v4M5 6h14v15H5V6Z" stroke="currentColor" stroke-linecap="round"/><path d="m8 14 2 2 5-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="kpi-content"><small>Survei Sekolah<br>Selesai</small><strong>720</strong></div></div>
+        <div class="kpi-card blue-tint"><div class="kpi-icon soft blue-color"><svg viewBox="0 0 24 24" fill="none"><path d="M7 3h10M7 21h10M8 4c0 4 3 5 4 8-1 3-4 4-4 8M16 4c0 4-3 5-4 8 1 3 4 4 4 8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="kpi-content"><small>Survei Sekolah<br>Belum</small><strong>530</strong></div></div>
+        <div class="kpi-card orange-tint"><div class="kpi-icon soft orange-color"><svg viewBox="0 0 24 24" fill="none"><path d="M8 17H6a4 4 0 1 1 .7-7.9A5.6 5.6 0 0 1 17.8 11H18a3 3 0 0 1 0 6h-2" stroke="currentColor" stroke-linecap="round"/><path d="M12 12v8M9 15l3-3 3 3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="kpi-content"><small>DED/CAD<br>Submitted</small><strong>410</strong></div></div>
+        <div class="kpi-card purple-tint"><div class="kpi-icon soft purple-color"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor"/><path d="m8 12.2 2.6 2.6L16.5 8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="kpi-content"><small>DED<br>Accepted</small><strong>280</strong></div></div>
+        <div class="kpi-card blue-tint"><div class="kpi-icon soft blue-color"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-linejoin="round"/><path d="M14 3v5h4M9 17v-5M9 12h4M15 15l2 2 3-4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="kpi-content"><small>RAB Perencanaan<br>Uploaded</small><strong>330</strong></div></div>
+        <div class="kpi-card yellow-tint"><div class="kpi-icon soft yellow-color"><svg viewBox="0 0 24 24" fill="none"><path d="m4 17 1 3 3 1 11-11-4-4L4 17Z" stroke="currentColor" stroke-linejoin="round"/><path d="m13 8 4 4" stroke="currentColor" stroke-linecap="round"/></svg></div><div class="kpi-content"><small>Revisi</small><strong>120</strong></div></div>
+        <div class="kpi-card red-tint"><div class="kpi-icon soft red-color"><svg viewBox="0 0 24 24" fill="none"><path d="M6 21V4m0 1c4-2 7 2 12 0v9c-5 2-8-2-12 0" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="kpi-content"><small>Selesai</small><strong>190</strong></div></div>
+      </div>
+
+      <div class="donut-grid">
+        <div class="donut-card">
+          <h3 class="chart-title">Sudah Survei vs Belum Survei</h3>
+          <div class="donut-flex">
+            <div class="donut" style="background: conic-gradient(#2fc94d 0 57.6%, #55a8e8 57.6% 100%);">
+              <div class="donut-center"><div><span>Total</span><strong>1.250</strong></div></div>
+            </div>
+            <div class="legend-list">
+              <div class="legend-item green-color"><span class="dot"></span><span>Sudah Survei<br>720 (57,6%)</span></div>
+              <div class="legend-item blue-color"><span class="dot"></span><span>Belum Survei<br>530 (42,4%)</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="donut-card purple-bg">
+          <h3 class="chart-title">DED Submitted vs DED Accepted</h3>
+          <div class="donut-flex">
+            <div class="donut" style="background: conic-gradient(#9b57ea 0 59.4%, #ffa733 59.4% 100%);">
+              <div class="donut-center"><div><span>Total</span><strong>690</strong></div></div>
+            </div>
+            <div class="legend-list">
+              <div class="legend-item purple-color"><span class="dot"></span><span>DED Submitted<br>410 (59,4%)</span></div>
+              <div class="legend-item orange-color"><span class="dot"></span><span>DED Accepted<br>280 (40,6%)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <h2 class="section-title">Survei Harga Material</h2>
+
+      <div class="material-kpis">
+        <div class="kpi-card wide-kpi green-tint"><div class="kpi-icon soft green-color"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 5 6.8v8.4L12 19l7-3.8V6.8L12 3Z" stroke="currentColor" stroke-linejoin="round"/><path d="m5 7 7 4 7-4M12 11v8M8.5 5.1v8M15.5 5.1v8" stroke="currentColor" stroke-linecap="round"/></svg></div><div class="kpi-content"><small>Survei Harga Material Selesai</small><strong>560</strong></div></div>
+        <div class="kpi-card wide-kpi blue-tint"><div class="kpi-icon soft blue-color"><svg viewBox="0 0 24 24" fill="none"><path d="M7 3h10M7 21h10M8 4c0 4 3 5 4 8-1 3-4 4-4 8M16 4c0 4-3 5-4 8 1 3 4 4 4 8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="kpi-content"><small>Survei Harga Material Belum</small><strong>420</strong></div></div>
+        <div class="kpi-card wide-kpi orange-tint"><div class="kpi-icon soft orange-color"><svg viewBox="0 0 24 24" fill="none"><path d="M12 22s7-6.12 7-13A7 7 0 0 0 5 9c0 6.88 7 13 7 13Z" stroke="currentColor" stroke-width="2.1"/><circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="2"/></svg></div><div class="kpi-content"><small>Survei Lokasi Selesai</small><strong>680</strong></div></div>
+      </div>
+
+      <div class="chart-card material-chart">
+        <h3 class="chart-title">Sudah Survei vs Belum Survei</h3>
+        <div class="donut-flex">
+          <div class="donut" style="background: conic-gradient(#2fc94d 0 57.1%, #55a8e8 57.1% 100%);">
+            <div class="donut-center"><div><span>Total</span><strong>980</strong></div></div>
+          </div>
+          <div class="legend-list">
+            <div class="legend-item green-color"><span class="dot"></span><span>Sudah Survei<br>560 (57,1%)</span></div>
+            <div class="legend-item blue-color"><span class="dot"></span><span>Belum Survei<br>420 (42,9%)</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+      </div>
+    </main>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const schoolPoints = [
+      { name: 'Banda Aceh', status: 'Aktif', total: 64, lat: 5.5483, lng: 95.3238 },
+      { name: 'Medan', status: 'Selesai', total: 88, lat: 3.5952, lng: 98.6722 },
+      { name: 'Padang', status: 'Aktif', total: 52, lat: -0.9471, lng: 100.4172 },
+      { name: 'Palembang', status: 'Aktif', total: 73, lat: -2.9761, lng: 104.7754 },
+      { name: 'Jakarta', status: 'Selesai', total: 110, lat: -6.2088, lng: 106.8456 },
+      { name: 'Bandung', status: 'Aktif', total: 97, lat: -6.9175, lng: 107.6191 },
+      { name: 'Yogyakarta', status: 'Selesai', total: 61, lat: -7.7956, lng: 110.3695 },
+      { name: 'Surabaya', status: 'Aktif', total: 102, lat: -7.2575, lng: 112.7521 },
+      { name: 'Denpasar', status: 'Aktif', total: 36, lat: -8.6705, lng: 115.2126 },
+      { name: 'Pontianak', status: 'Aktif', total: 48, lat: -0.0263, lng: 109.3425 },
+      { name: 'Banjarmasin', status: 'Selesai', total: 45, lat: -3.3186, lng: 114.5944 },
+      { name: 'Samarinda', status: 'Aktif', total: 57, lat: -0.5022, lng: 117.1537 },
+      { name: 'Makassar', status: 'Aktif', total: 79, lat: -5.1477, lng: 119.4327 },
+      { name: 'Palu', status: 'Aktif', total: 34, lat: -0.8917, lng: 119.8707 },
+      { name: 'Manado', status: 'Selesai', total: 39, lat: 1.4748, lng: 124.8421 },
+      { name: 'Ambon', status: 'Aktif', total: 28, lat: -3.6954, lng: 128.1814 },
+      { name: 'Jayapura', status: 'Aktif', total: 42, lat: -2.5337, lng: 140.7181 },
+      { name: 'Sorong', status: 'Aktif', total: 31, lat: -0.8762, lng: 131.2558 }
+    ];
+
+    const mapElement = document.getElementById('geotagging-map');
+
+    if (mapElement && window.L) {
+      const indonesiaBounds = L.latLngBounds(
+        L.latLng(-11.5, 94.0),
+        L.latLng(6.5, 141.5)
+      );
+
+      const map = L.map(mapElement, {
+        zoomControl: true,
+        scrollWheelZoom: true,
+        maxBounds: indonesiaBounds,
+        maxBoundsViscosity: 1.0
+      });
+
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        minZoom: 4,
+        errorTileUrl:
+          'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='
+      }).addTo(map);
+
+      const markerIcon = L.divIcon({
+        className: 'school-marker-icon',
+        html: '<span class="school-marker" aria-hidden="true"></span>',
+        iconSize: [28, 28],
+        iconAnchor: [14, 28],
+        popupAnchor: [0, -28]
+      });
+
+      const bounds = [];
+
+      schoolPoints.forEach((point) => {
+        const marker = L.marker([point.lat, point.lng], { icon: markerIcon }).addTo(map);
+        marker.bindPopup(
+          '<strong>' + point.name + '</strong><br>Status: ' + point.status + '<br>Total titik: ' + point.total
+        );
+        bounds.push([point.lat, point.lng]);
+      });
+
+      if (bounds.length) {
+        map.fitBounds(bounds, {
+          padding: [24, 24]
+        });
+      } else {
+        map.setView([-2.5, 118], 4);
+      }
+
+      map.setMinZoom(map.getBoundsZoom(indonesiaBounds));
+    }
+  </script>
+</body>
+</html>
