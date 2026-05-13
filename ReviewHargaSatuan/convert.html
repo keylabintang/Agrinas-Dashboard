@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Convert RAB - Review Harga Satuan</title>
+  <style>
+    :root {
+      --navy: #0b1b3d;
+      --text: #182642;
+      --muted: #64718d;
+      --line: #e5ebf3;
+      --soft-line: #eef2f7;
+      --green: #08a63a;
+      --green-dark: #009333;
+      --blue: #1677f2;
+      --blue-soft: #e9f3ff;
+      --gray: #aab3c2;
+      --gray-soft: #eef1f5;
+      --orange: #ff7417;
+      --red: #ff101f;
+      --table-blue: #dff1ff;
+      --shadow: 0 16px 42px rgba(15, 23, 42, 0.075);
+      --soft-shadow: 0 8px 20px rgba(15, 23, 42, 0.045);
+      --radius-lg: 16px;
+      --radius-md: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #fff;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+      background: #f3f6fb;
+    }
+
+    .sidebar-frame {
+      width: 320px;
+      min-width: 320px;
+      height: 100vh;
+      border: 0;
+      background: #ffffff;
+      position: sticky;
+      top: 0;
+    }
+
+    .app-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .page {
+      width: min(1190px, calc(100% - 68px));
+      margin: 29px auto 52px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #0a3b70;
+      font-size: 15px;
+      font-weight: 680;
+      margin-bottom: 31px;
+    }
+
+    .breadcrumb svg {
+      color: #7c879c;
+      flex: 0 0 auto;
+    }
+
+    .breadcrumb .current {
+      color: var(--navy);
+      font-weight: 850;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 28px;
+      margin-bottom: 42px;
+    }
+
+    .hero-title {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 39px;
+      line-height: 1.05;
+      letter-spacing: -0.045em;
+      font-weight: 870;
+    }
+
+    .project-id {
+      margin: 14px 0 0;
+      color: #667691;
+      font-size: 18px;
+      font-weight: 520;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 28px;
+      padding: 0 13px;
+      border-radius: 999px;
+      color: #008b34;
+      background: #dbf8e5;
+      font-size: 14px;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    .status-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 68px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      height: 51px;
+      border-radius: 8px;
+      border: 1px solid #dbe2ed;
+      background: #fff;
+      color: var(--navy);
+      padding: 0 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 11px;
+      font-size: 15px;
+      font-weight: 820;
+      white-space: nowrap;
+      box-shadow: var(--soft-shadow);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .btn:hover,
+    .icon-btn:hover,
+    .detail-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.075);
+    }
+
+    .stage-card,
+    .info-card,
+    .recap-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .stage-card {
+      padding: 35px 68px 31px;
+      margin-bottom: 31px;
+    }
+
+    .stepper {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      position: relative;
+    }
+
+    .stepper::before {
+      content: "";
+      position: absolute;
+      top: 20px;
+      left: 58px;
+      right: 58px;
+      height: 4px;
+      background: #dfe4eb;
+      border-radius: 999px;
+    }
+
+    .step-progress {
+      position: absolute;
+      top: 20px;
+      left: 58px;
+      height: 4px;
+      width: 0;
+      border-radius: 999px;
+      background: var(--green);
+      transition: width 0.25s ease;
+      z-index: 1;
+    }
+
+    .step {
+      position: relative;
+      z-index: 2;
+      min-height: 145px;
+      text-align: center;
+    }
+
+    .step-circle {
+      width: 47px;
+      height: 47px;
+      margin: 0 auto 17px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #aab3c2;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 880;
+      box-shadow: 0 5px 13px rgba(15, 23, 42, 0.12);
+    }
+
+    .step.done .step-circle {
+      background: linear-gradient(180deg, #1fc15f, #059d3c);
+    }
+
+    .step.active .step-circle {
+      background: linear-gradient(180deg, #2687ff, #0d66df);
+      box-shadow: 0 8px 18px rgba(22, 119, 242, 0.27);
+    }
+
+    .step-title {
+      color: var(--navy);
+      font-size: 18px;
+      line-height: 1.42;
+      font-weight: 850;
+      margin-bottom: 10px;
+    }
+
+    .step-status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      color: #60708b;
+      background: var(--gray-soft);
+      font-size: 14px;
+      font-weight: 620;
+    }
+
+    .step.done .step-status {
+      color: #08a63a;
+      background: #ddf8e5;
+    }
+
+    .step.active .step-status {
+      color: #076be8;
+      background: #e6f1ff;
+    }
+
+    .step-date {
+      display: block;
+      margin-top: 8px;
+      color: #687690;
+      font-size: 14px;
+      font-weight: 520;
+    }
+
+    .info-card {
+      padding: 29px 32px 25px;
+      margin-bottom: 31px;
+    }
+
+    .section-title {
+      margin: 0 0 24px;
+      color: var(--navy);
+      font-size: 23px;
+      font-weight: 860;
+      letter-spacing: -0.025em;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 58px;
+    }
+
+    .info-col {
+      border-top: 1px solid var(--line);
+    }
+
+    .info-row {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 28px;
+      align-items: center;
+      min-height: 80px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .info-label {
+      color: #53637d;
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .input,
+    .textarea {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid #dbe2ed;
+      border-radius: 9px;
+      color: var(--navy);
+      background: #fff;
+      padding: 9px 12px;
+      font-size: 14px;
+      font-weight: 750;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .textarea {
+      min-height: 64px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .input:focus,
+    .textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(22, 119, 242, 0.1);
+    }
+
+    .recap-card {
+      padding: 29px 27px 29px;
+    }
+
+    .recap-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 22px;
+      margin-bottom: 24px;
+    }
+
+    .recap-title-wrap .section-title {
+      margin-bottom: 8px;
+    }
+
+    .recap-subtitle {
+      margin: 0;
+      color: #667691;
+      font-size: 14px;
+      font-weight: 520;
+    }
+
+    .recap-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .outline-green {
+      height: 49px;
+      border: 1px solid rgba(8, 166, 58, 0.42);
+      color: var(--green);
+      background: #fff;
+      box-shadow: none;
+    }
+
+    .search-box {
+      width: 247px;
+      height: 49px;
+      border: 1px solid #dbe2ed;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 15px;
+      color: #74819a;
+      background: #fff;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.025);
+    }
+
+    .search-box input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .search-box input::placeholder {
+      color: #a0a9ba;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-bottom: 22px;
+    }
+
+    .summary-card {
+      min-height: 107px;
+      border: 1px solid #dbe2ed;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      background: #fff;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.025);
+      padding: 18px;
+    }
+
+    .summary-card small {
+      display: block;
+      color: #4b5a75;
+      font-size: 14px;
+      font-weight: 720;
+      margin-bottom: 12px;
+    }
+
+    .summary-card strong {
+      display: block;
+      font-size: 21px;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      font-weight: 870;
+    }
+
+    .text-blue { color: #006eff; }
+    .text-green { color: #00a53b; }
+    .text-orange { color: #ff7417; }
+    .text-red { color: #ff101f; }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      min-width: 960px;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    th,
+    td {
+      border-right: 1px solid var(--soft-line);
+      border-bottom: 1px solid var(--soft-line);
+      vertical-align: middle;
+    }
+
+    th:last-child,
+    td:last-child {
+      border-right: 0;
+    }
+
+    thead th {
+      height: 49px;
+      color: var(--navy);
+      background: #fff;
+      padding: 0 20px;
+      font-size: 14px;
+      font-weight: 850;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    thead th.numeric,
+    tbody td.numeric {
+      text-align: right;
+    }
+
+    thead th.center,
+    tbody td.center {
+      text-align: center;
+    }
+
+    tbody td {
+      min-height: 65px;
+      padding: 16px 20px;
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 620;
+    }
+
+    tbody tr.group-row td {
+      height: 49px;
+      background: var(--table-blue);
+      color: var(--navy);
+      font-weight: 880;
+      text-transform: uppercase;
+    }
+
+    tbody tr.total-row td {
+      height: 64px;
+      font-size: 17px;
+      font-weight: 880;
+      background: #f8fafc;
+    }
+
+    tbody tr.total-row td.total-blue {
+      background: #e9f5ff;
+      color: #006eff;
+    }
+
+    tbody tr.total-row td.total-green {
+      background: #e8faef;
+      color: #009c37;
+    }
+
+    tbody tr.total-row td.total-orange {
+      background: #fff2dc;
+      color: #da6500;
+    }
+
+    .detail-btn {
+      height: 42px;
+      min-width: 101px;
+      border-radius: 8px;
+      border: 1px solid rgba(8, 166, 58, 0.42);
+      color: var(--green);
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      font-size: 14px;
+      font-weight: 820;
+      box-shadow: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .note-box {
+      min-height: 70px;
+      margin-top: 23px;
+      padding: 22px 20px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: #0755c8;
+      background: #edf7ff;
+      border: 1px solid #d6eaff;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 620;
+    }
+
+    .note-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: #1d76e8;
+      flex: 0 0 auto;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 26px;
+      background: rgba(8, 18, 38, 0.38);
+      z-index: 80;
+    }
+
+    .modal-backdrop.show {
+      display: grid;
+    }
+
+    .modal {
+      width: min(720px, 100%);
+      max-height: min(720px, calc(100vh - 52px));
+      overflow: auto;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 28px 70px rgba(8, 18, 38, 0.24);
+      border: 1px solid #e1e7f0;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 22px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 21px;
+      font-weight: 870;
+      letter-spacing: -0.025em;
+    }
+
+    .modal-body {
+      padding: 22px 24px 24px;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .modal-field {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fbfcff;
+    }
+
+    .modal-field small {
+      display: block;
+      color: #65748e;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    .modal-field strong {
+      display: block;
+      color: var(--navy);
+      font-size: 15px;
+      line-height: 1.4;
+      font-weight: 850;
+    }
+
+    .close-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      border: 1px solid #dbe2ed;
+      background: #fff;
+      color: var(--navy);
+      display: grid;
+      place-items: center;
+    }
+
+    .toast {
+      position: fixed;
+      right: 28px;
+      bottom: 28px;
+      max-width: 430px;
+      min-width: 280px;
+      padding: 15px 18px;
+      color: #07356f;
+      background: #eef7ff;
+      border: 1px solid #cae4ff;
+      border-radius: 12px;
+      box-shadow: 0 18px 44px rgba(15, 23, 42, 0.18);
+      font-size: 14px;
+      font-weight: 760;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      z-index: 99;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hidden-row {
+      display: none;
+    }
+
+    @media (max-width: 1050px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar-frame {
+        width: 100%;
+        min-width: 100%;
+        height: 100vh;
+        position: static;
+      }
+
+      .page {
+        width: calc(100% - 32px);
+      }
+
+      .topbar {
+        flex-direction: column;
+      }
+
+      .action-group {
+        margin-top: 0;
+        justify-content: flex-start;
+      }
+
+      .stage-card {
+        padding: 30px 24px;
+        overflow-x: auto;
+      }
+
+      .stepper {
+        min-width: 840px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      h1 {
+        font-size: 34px;
+      }
+
+      .hero-title {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .recap-header {
+        flex-direction: column;
+      }
+
+      .recap-actions,
+      .search-box,
+      .outline-green {
+        width: 100%;
+      }
+
+      .info-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 15px 0;
+      }
+
+      .modal-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <iframe
+      class="sidebar-frame"
+      src="../sidebar.html?page=ReviewHargaSatuan/daftar.html"
+      title="Sidebar Navigation"
+    ></iframe>
+    <main class="app-main">
+  <div class="page">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <span>Review Harga Satuan</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      <span>Daftar</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      <span>Detail Proyek</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      <span class="current">Convert RAB</span>
+    </nav>
+
+    <section class="topbar">
+      <div>
+        <div class="hero-title">
+          <h1>Convert RAB</h1>
+          <span class="status-pill" id="pageBadge">Dalam Proses</span>
+        </div>
+        <p class="project-id">ID Proyek: <span id="projectIdLabel">RVS-2025-000123</span></p>
+      </div>
+
+      <div class="action-group">
+        <button class="btn" id="backBtn" type="button">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          Kembali ke Verifikasi
+        </button>
+        <button class="btn" id="nextStageBtn" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          Lanjut Review Harga Material
+        </button>
+      </div>
+    </section>
+
+    <section class="stage-card" aria-label="Pipeline proyek">
+      <input type="hidden" id="currentStage" value="convert_rab" />
+      <div class="stepper" id="stepper">
+        <div class="step-progress" id="stepProgress"></div>
+      </div>
+    </section>
+
+    <form class="info-card" id="projectForm">
+      <h2 class="section-title">Informasi Proyek</h2>
+      <div class="info-grid">
+        <div class="info-col">
+          <div class="info-row">
+            <label class="info-label" for="projectName">Nama Proyek</label>
+            <input class="input" id="projectName" name="projectName" type="text" value="Rehabilitasi Gedung Sekolah Dasar (SD) Negeri 1 Adisara " readonly/>
+          </div>
+          <div class="info-row">
+            <label class="info-label" for="schoolName">Sekolah</label>
+            <input class="input" id="schoolName" name="schoolName" type="text" value="SD Negeri 1 Adisara" readonly />
+          </div>
+          <div class="info-row">
+            <label class="info-label" for="location">Lokasi</label>
+            <textarea class="textarea" id="location" name="location" readonly>Jl. Raya No.3, Desa Adisara, RT 02 / RW 02, Kec. Jatilawang, Kab. Banyumas</textarea>
+          </div>
+        </div>
+
+        <div class="info-col">
+          <div class="info-row">
+            <label class="info-label" for="programYear">Tahun Program</label>
+            <input class="input" id="programYear" name="programYear" type="number" value="2026" readonly />
+          </div>
+          <div class="info-row">
+            <label class="info-label" for="sourceFile">File Sumber</label>
+            <input class="input" id="sourceFile" name="sourceFile" type="text" value="RAB_Pengajuan_SD_1_Adisara.xlsx" />
+          </div>
+          <div class="info-row">
+            <label class="info-label" for="convertDate">Tanggal Convert</label>
+            <input class="input" id="convertDate" name="convertDate" type="text" value="22 April 2025 10:15 WIB" />
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <section class="recap-card">
+      <div class="recap-header">
+        <div class="recap-title-wrap">
+          <h2 class="section-title">Rekapitulasi Convert RAB</h2>
+          <p class="recap-subtitle">Perbandingan nilai proposal dengan hasil convert per item pekerjaan.</p>
+        </div>
+
+        <div class="recap-actions">
+          <button class="btn outline-green" id="addItemBtn" type="button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
+            Item Pekerjaan
+          </button>
+          <label class="search-box" for="searchInput">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2.1" /><path d="m16.3 16.3 4.2 4.2" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" /></svg>
+            <input id="searchInput" type="search" placeholder="Cari item pekerjaan..." />
+          </label>
+          <button class="btn outline-green" id="filterBtn" type="button">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 5h16l-6.2 7v5.2l-3.6 1.8V12L4 5Z" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" /></svg>
+            Filter
+          </button>
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <small>Total Nilai Proposal</small>
+          <strong class="text-blue" id="totalProposalText">793.126.235,78</strong>
+        </div>
+        <div class="summary-card">
+          <small>Total Nilai Convert</small>
+          <strong class="text-green" id="totalConvertText">766.698.967,29</strong>
+        </div>
+        <div class="summary-card">
+          <small>Total Selisih</small>
+          <strong class="text-orange" id="totalSelisihText">26.427.268,49</strong>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table aria-label="Tabel rekapitulasi convert RAB">
+          <thead>
+            <tr>
+              <th class="center" style="width: 76px;">Kode</th>
+              <th>Item Pekerjaan</th>
+              <th class="numeric" style="width: 180px;">Nilai Proposal</th>
+              <th class="numeric" style="width: 180px;">Nilai Convert</th>
+              <th class="numeric" style="width: 170px;">Selisih</th>
+              <th class="center" style="width: 140px;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="rabTableBody">
+            <tr class="group-row" data-group="rekapitulasi">
+              <td></td>
+              <td colspan="5">REKAPITULASI</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note-box">
+        <span class="note-icon">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 10v7M12 7h.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" /></svg>
+        </span>
+        <span>Klik tombol "Detail" untuk melihat rincian item pekerjaan dan hasil convert per komponen.</span>
+      </div>
+    </section>
+  </div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Detail Item Pekerjaan</h3>
+        <button class="close-btn" id="closeModalBtn" type="button" aria-label="Tutup modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-grid" id="modalContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const stages = [
+      { key: "draft", title: "Draft", date: "20 Apr 2025" },
+      { key: "verifikasi", title: "Verifikasi", date: "21 Apr 2025" },
+      { key: "convert_rab", title: "Convert RAB", date: "22 Apr 2025" },
+      { key: "review_material", title: "Review Harga\nMaterial", date: "" },
+      { key: "review_satuan", title: "Review Harga\nSatuan", date: "" }
+    ];
+
+    const initialItems = [
+      {
+        kode: "A",
+        item: "Rehabilitasi Ruang Kelas 8 Lokal (Lokasi B)",
+        proposal: 564625096.06,
+        convert: 529897767.20,
+        components: ["Pembongkaran", "Pekerjaan dinding", "Pengecatan", "Finishing ruang kelas"]
+      },
+      {
+        kode: "B",
+        item: "Rehabilitasi Ruang Perpustakaan (Lokasi A)",
+        proposal: 123197872.94,
+        convert: 131475079.25,
+        components: ["Pekerjaan plafon", "Pekerjaan lantai", "Pekerjaan kusen", "Pengecatan"]
+      },
+      {
+        kode: "C",
+        item: "Rehabilitasi Toilet, Dapur, Gudang dan Musholla (Lokasi C)",
+        proposal: 63599329.23,
+        convert: 63622183.27,
+        components: ["Pekerjaan sanitair", "Pekerjaan plumbing", "Pekerjaan keramik", "Pengecatan"]
+      },
+      {
+        kode: "D",
+        item: "Biaya Management",
+        proposal: 41703937.55,
+        convert: 41703937.56,
+        components: ["Koordinasi lapangan", "Administrasi proyek", "Dokumentasi"]
+      }
+    ];
+
+    const state = {
+      stage: "convert_rab",
+      filterMode: "all",
+      items: [...initialItems]
+    };
+
+    const els = {
+      stepper: document.getElementById("stepper"),
+      stepProgress: document.getElementById("stepProgress"),
+      currentStage: document.getElementById("currentStage"),
+      pageBadge: document.getElementById("pageBadge"),
+      tableBody: document.getElementById("rabTableBody"),
+      searchInput: document.getElementById("searchInput"),
+      totalProposalText: document.getElementById("totalProposalText"),
+      totalConvertText: document.getElementById("totalConvertText"),
+      totalSelisihText: document.getElementById("totalSelisihText"),
+      detailModal: document.getElementById("detailModal"),
+      modalContent: document.getElementById("modalContent"),
+      toast: document.getElementById("toast")
+    };
+
+    function renderStepper(activeKey) {
+      const activeIndex = Math.max(0, stages.findIndex(stage => stage.key === activeKey));
+      els.stepper.querySelectorAll(".step").forEach(step => step.remove());
+
+      stages.forEach((stage, index) => {
+        const step = document.createElement("div");
+        step.className = "step";
+        if (index < activeIndex) step.classList.add("done");
+        if (index === activeIndex) step.classList.add("active");
+
+        const circleContent = index < activeIndex
+          ? `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 12 4 4 8-9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>`
+          : String(index + 1);
+
+        let statusText = "Belum Dimulai";
+        if (index < activeIndex) statusText = "Selesai";
+        if (index === activeIndex) statusText = "Sedang Proses";
+
+        step.innerHTML = `
+          <div class="step-circle">${circleContent}</div>
+          <div class="step-title">${stage.title.replace("\n", "<br>")}</div>
+          <span class="step-status">${statusText}</span>
+          ${stage.date && index <= activeIndex ? `<span class="step-date">${stage.date}</span>` : ""}
+        `;
+
+        els.stepper.appendChild(step);
+      });
+
+      const maxWidth = els.stepper.clientWidth - 116;
+      const progressWidth = activeIndex === 0 ? 0 : maxWidth * (activeIndex / (stages.length - 1));
+      els.stepProgress.style.width = `${progressWidth}px`;
+      els.currentStage.value = activeKey;
+      els.pageBadge.textContent = activeKey === "review_satuan" ? "Selesai" : "Dalam Proses";
+    }
+
+    function formatIdr(value) {
+      const absolute = Math.abs(value);
+      const formatted = absolute.toLocaleString("id-ID", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      return value < 0 ? `(${formatted})` : formatted;
+    }
+
+    function getSelisih(item) {
+      return item.proposal - item.convert;
+    }
+
+    function getFilteredItems() {
+      const query = els.searchInput.value.trim().toLowerCase();
+      return state.items.filter(item => {
+        const matchQuery = `${item.kode} ${item.item}`.toLowerCase().includes(query);
+        const selisih = getSelisih(item);
+        const matchFilter = state.filterMode === "all"
+          || (state.filterMode === "positive" && selisih >= 0)
+          || (state.filterMode === "negative" && selisih < 0);
+        return matchQuery && matchFilter;
+      });
+    }
+
+    function renderTable() {
+      const existingRows = els.tableBody.querySelectorAll("tr:not(.group-row)");
+      existingRows.forEach(row => row.remove());
+
+      const items = getFilteredItems();
+      const groupRow = els.tableBody.querySelector(".group-row");
+
+      items.forEach(item => {
+        const selisih = getSelisih(item);
+        const row = document.createElement("tr");
+        row.dataset.kode = item.kode;
+        row.innerHTML = `
+          <td class="center">${item.kode}</td>
+          <td>${item.item}</td>
+          <td class="numeric">${formatIdr(item.proposal)}</td>
+          <td class="numeric">${formatIdr(item.convert)}</td>
+          <td class="numeric ${selisih < 0 ? "text-red" : "text-green"}">${formatIdr(selisih)}</td>
+          <td class="center">
+            <button class="detail-btn" type="button" data-kode="${item.kode}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" stroke-width="2" /><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" /></svg>
+              Detail
+            </button>
+          </td>
+        `;
+        els.tableBody.insertBefore(row, groupRow.nextSibling);
+      });
+
+      const totalRow = document.createElement("tr");
+      totalRow.className = "total-row";
+      const totals = calculateTotals(items.length ? items : state.items);
+      totalRow.innerHTML = `
+        <td colspan="2" class="center">TOTAL</td>
+        <td class="numeric total-blue">${formatIdr(totals.proposal)}</td>
+        <td class="numeric total-green">${formatIdr(totals.convert)}</td>
+        <td class="numeric total-orange">${formatIdr(totals.selisih)}</td>
+        <td></td>
+      `;
+      els.tableBody.appendChild(totalRow);
+
+      if (!items.length) {
+        const emptyRow = document.createElement("tr");
+        emptyRow.innerHTML = `<td colspan="6" class="center" style="height: 90px; color: #667691; font-weight: 700;">Tidak ada item yang cocok dengan pencarian.</td>`;
+        els.tableBody.insertBefore(emptyRow, totalRow);
+      }
+
+      document.querySelectorAll(".detail-btn").forEach(button => {
+        button.addEventListener("click", () => openDetail(button.dataset.kode));
+      });
+
+      updateSummaryCards();
+    }
+
+    function calculateTotals(items) {
+      return items.reduce((acc, item) => {
+        acc.proposal += item.proposal;
+        acc.convert += item.convert;
+        acc.selisih += getSelisih(item);
+        return acc;
+      }, { proposal: 0, convert: 0, selisih: 0 });
+    }
+
+    function updateSummaryCards() {
+      const totals = calculateTotals(state.items);
+      els.totalProposalText.textContent = formatIdr(totals.proposal);
+      els.totalConvertText.textContent = formatIdr(totals.convert);
+      els.totalSelisihText.textContent = formatIdr(totals.selisih);
+    }
+
+    function openDetail(kode) {
+      const item = state.items.find(entry => entry.kode === kode);
+      if (!item) return;
+      const selisih = getSelisih(item);
+      els.modalContent.innerHTML = `
+        <div class="modal-field"><small>Kode</small><strong>${item.kode}</strong></div>
+        <div class="modal-field"><small>Status Selisih</small><strong class="${selisih < 0 ? "text-red" : "text-green"}">${selisih < 0 ? "Nilai convert lebih besar" : "Nilai proposal lebih besar"}</strong></div>
+        <div class="modal-field" style="grid-column: 1 / -1;"><small>Item Pekerjaan</small><strong>${item.item}</strong></div>
+        <div class="modal-field"><small>Nilai Proposal</small><strong class="text-blue">${formatIdr(item.proposal)}</strong></div>
+        <div class="modal-field"><small>Nilai Convert</small><strong class="text-green">${formatIdr(item.convert)}</strong></div>
+        <div class="modal-field"><small>Selisih</small><strong class="${selisih < 0 ? "text-red" : "text-orange"}">${formatIdr(selisih)}</strong></div>
+        <div class="modal-field"><small>Komponen</small><strong>${item.components.join(", ")}</strong></div>
+      `;
+      els.detailModal.classList.add("show");
+    }
+
+    function exportConvertResult() {
+      const project = {
+        id: document.getElementById("projectIdLabel").textContent,
+        nama: document.getElementById("projectName").value,
+        sekolah: document.getElementById("schoolName").value,
+        lokasi: document.getElementById("location").value,
+        tahun: document.getElementById("programYear").value,
+        file: document.getElementById("sourceFile").value,
+        tanggal: document.getElementById("convertDate").value
+      };
+
+      const header = ["Kode", "Item Pekerjaan", "Nilai Proposal", "Nilai Convert", "Selisih"];
+      const rows = state.items.map(item => [
+        item.kode,
+        item.item,
+        item.proposal,
+        item.convert,
+        getSelisih(item)
+      ]);
+
+      const totals = calculateTotals(state.items);
+      rows.push(["", "TOTAL", totals.proposal, totals.convert, totals.selisih]);
+
+      const content = [
+        `ID Proyek,${project.id}`,
+        `Nama Proyek,"${project.nama}"`,
+        `Sekolah,"${project.sekolah}"`,
+        `Lokasi,"${project.lokasi.replace(/\n/g, " ")}"`,
+        `Tahun Program,${project.tahun}`,
+        `File Sumber,${project.file}`,
+        `Tanggal Convert,${project.tanggal}`,
+        "",
+        header.join(","),
+        ...rows.map(row => row.map(value => typeof value === "string" ? `"${value.replace(/"/g, '""')}"` : value).join(","))
+      ].join("\n");
+
+      downloadFile("hasil-convert-rab.csv", content, "text/csv;charset=utf-8");
+      showToast("File hasil convert berhasil diunduh dalam format CSV.");
+    }
+
+    function downloadFile(filename, content, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function addItem() {
+      const nextIndex = state.items.length;
+      const kode = String.fromCharCode(65 + nextIndex);
+      const newItem = {
+        kode,
+        item: "Item Pekerjaan Baru",
+        proposal: 0,
+        convert: 0,
+        components: ["Komponen baru"]
+      };
+      state.items.push(newItem);
+      renderTable();
+      showToast(`Item pekerjaan "${kode}" berhasil ditambahkan.`);
+    }
+
+    function cycleFilter() {
+      const modes = ["all", "positive", "negative"];
+      const labels = {
+        all: "Semua item",
+        positive: "Selisih positif",
+        negative: "Selisih negatif"
+      };
+      const currentIndex = modes.indexOf(state.filterMode);
+      state.filterMode = modes[(currentIndex + 1) % modes.length];
+      renderTable();
+      showToast(`Filter aktif: ${labels[state.filterMode]}.`);
+    }
+
+    function goNextStage() {
+      state.stage = "review_material";
+      renderStepper(state.stage);
+      showToast("Pipeline dipindahkan ke stage Review Harga Material.");
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => els.toast.classList.remove("show"), 2400);
+    }
+
+    document.getElementById("nextStageBtn").addEventListener("click", goNextStage);
+    document.getElementById("addItemBtn").addEventListener("click", addItem);
+    document.getElementById("filterBtn").addEventListener("click", cycleFilter);
+    document.getElementById("backBtn").addEventListener("click", () => showToast("Tombol kembali aktif. Hubungkan ke route detail proyek di aplikasi kamu."));
+    document.getElementById("closeModalBtn").addEventListener("click", () => els.detailModal.classList.remove("show"));
+    els.detailModal.addEventListener("click", event => {
+      if (event.target === els.detailModal) els.detailModal.classList.remove("show");
+    });
+    els.searchInput.addEventListener("input", renderTable);
+    window.addEventListener("resize", () => renderStepper(state.stage));
+
+    renderStepper(state.stage);
+    renderTable();
+  </script>
+</body>
+</html>

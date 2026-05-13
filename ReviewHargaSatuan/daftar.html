@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daftar Review Harga Satuan</title>
+  <style>
+    :root {
+      --navy: #07163d;
+      --text: #1b274c;
+      --muted: #74809d;
+      --line: #e5eaf3;
+      --soft-line: #eef2f8;
+      --green: #17a832;
+      --green-dark: #009c23;
+      --blue: #1588ff;
+      --orange: #ff7a1a;
+      --gray: #8088a0;
+      --bg: #ffffff;
+      --shadow: 0 18px 42px rgba(16, 24, 40, 0.055);
+      --soft-shadow: 0 8px 20px rgba(16, 24, 40, 0.045);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #ffffff;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+      background: #f3f6fb;
+    }
+
+    .sidebar-frame {
+      width: 320px;
+      min-width: 320px;
+      height: 100vh;
+      border: 0;
+      background: #ffffff;
+      position: sticky;
+      top: 0;
+    }
+
+    .app-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .page {
+      width: min(100% - clamp(20px, 4vw, 68px), 1296px);
+      margin: clamp(20px, 3vw, 38px) auto 28px;
+    }
+
+    .header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: 30px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: #66749b;
+      font-size: 16px;
+      font-weight: 750;
+      margin-bottom: 12px;
+    }
+
+    .breadcrumb .active {
+      color: var(--green);
+    }
+
+    .slash {
+      color: #9aa4b8;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(32px, 3.2vw, 41px);
+      line-height: 1.08;
+      letter-spacing: -0.048em;
+      font-weight: 850;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: #7b87a3;
+      font-size: clamp(16px, 1.5vw, 19px);
+      line-height: 1.35;
+      font-weight: 500;
+    }
+
+    .actions {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      padding-top: 33px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .btn {
+      min-height: 60px;
+      border-radius: 10px;
+      padding: 14px 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 13px;
+      border: 1px solid #dce3ef;
+      background: #fff;
+      color: var(--navy);
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: var(--soft-shadow);
+      white-space: nowrap;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .btn:hover,
+    .detail-btn:hover,
+    .delete-btn:hover,
+    .page-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(16, 24, 40, 0.08);
+    }
+
+    .btn svg {
+      flex: 0 0 auto;
+    }
+
+    .btn-primary {
+      min-width: 154px;
+      border-color: #009f24;
+      color: #fff;
+      background: linear-gradient(180deg, #0dbd32 0%, #00a92b 46%, #00951f 100%);
+      box-shadow: 0 14px 26px rgba(0, 157, 43, 0.24);
+      font-size: 17px;
+    }
+
+    .btn-filter {
+      min-width: 128px;
+      color: var(--green);
+      border-color: rgba(23, 168, 50, 0.45);
+      background: #ffffff;
+      box-shadow: 0 10px 22px rgba(17, 159, 43, 0.055);
+    }
+
+    .btn-date {
+      min-width: 232px;
+      color: #1b274c;
+      font-weight: 720;
+    }
+
+    .search-row {
+      margin-top: 20px;
+      margin-bottom: 23px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .search-box {
+      width: min(100%, 497px);
+      height: 56px;
+      border: 1px solid #dce3ef;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 19px;
+      color: #7886a5;
+      box-shadow: 0 8px 18px rgba(16, 24, 40, 0.03);
+      background: #fff;
+    }
+
+    .toolbar-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: #72809e;
+      font-size: 14px;
+      font-weight: 650;
+      flex-wrap: wrap;
+    }
+
+    .filter-panel {
+      width: min(100%, 720px);
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      box-shadow: var(--soft-shadow);
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 760;
+      color: #5c6785;
+    }
+
+    .field select,
+    .field input[type="date"],
+    .field input[type="text"] {
+      width: 100%;
+      height: 46px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid #dae2ee;
+      background: #ffffff;
+      color: var(--text);
+      font: inherit;
+      outline: 0;
+    }
+
+    .field-row {
+      display: flex;
+      align-items: end;
+      gap: 10px;
+    }
+
+    .btn-sm {
+      height: 46px;
+      padding: 0 18px;
+      border-radius: 12px;
+      border: 1px solid #dce3ef;
+      background: #fff;
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: var(--soft-shadow);
+      cursor: pointer;
+    }
+
+    .search-box input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      font-size: 15px;
+      font-weight: 560;
+      color: var(--text);
+      background: transparent;
+    }
+
+    .search-box input::placeholder {
+      color: #9aa6bd;
+      opacity: 1;
+    }
+
+    .table-card {
+      width: 100%;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 980px;
+    }
+
+    thead th {
+      height: 61px;
+      padding: 0 26px;
+      color: #495574;
+      font-size: 15px;
+      font-weight: 800;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+      white-space: nowrap;
+    }
+
+    tbody td {
+      height: 66px;
+      padding: 0 26px;
+      border-bottom: 1px solid var(--soft-line);
+      color: #222d4c;
+      font-size: 15.5px;
+      font-weight: 560;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 1px solid var(--soft-line);
+    }
+
+    .col-project { width: 27%; }
+    .col-school { width: 24%; }
+    .col-location { width: 23%; }
+    .col-status { width: 17%; }
+    .col-action { width: 9%; text-align: center; }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      height: 36px;
+      padding: 0 13px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 740;
+      border: 1px solid transparent;
+    }
+
+    .status::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 10%, transparent 90%);
+    }
+
+    .status.blue {
+      color: var(--blue);
+      background: #f0f7ff;
+      border-color: #e0efff;
+    }
+
+    .status.orange {
+      color: var(--orange);
+      background: #fff6ee;
+      border-color: #ffe7d2;
+    }
+
+    .status.green {
+      color: var(--green);
+      background: #f0fff3;
+      border-color: #daf8e0;
+    }
+
+    .status.gray {
+      color: #7d879e;
+      background: #f8f9fc;
+      border-color: #edf0f5;
+    }
+
+    .action-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .detail-btn {
+      width: 96px;
+      height: 38px;
+      border-radius: 8px;
+      border: 1px solid #e3e8f0;
+      background: #fff;
+      color: var(--green);
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 5px 12px rgba(16, 24, 40, 0.025);
+      cursor: pointer;
+    }
+
+    .delete-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      border: 1px solid #f2d7db;
+      display: inline-grid;
+      place-items: center;
+      color: #d93b4d;
+      background: #fff7f8;
+      box-shadow: 0 5px 12px rgba(16, 24, 40, 0.025);
+      cursor: pointer;
+    }
+
+    .table-footer {
+      height: 73px;
+      padding: 0 34px 0 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #7a85a0;
+      font-size: 15px;
+      font-weight: 560;
+    }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .page-btn {
+      width: 40px;
+      height: 40px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 8px;
+      border: 1px solid #e4e9f2;
+      background: #fff;
+      color: var(--navy);
+      font-size: 15px;
+      font-weight: 800;
+      box-shadow: 0 5px 12px rgba(16, 24, 40, 0.025);
+    }
+
+    .page-btn.active {
+      color: var(--green);
+      border-color: #25c047;
+      box-shadow: 0 0 0 3px rgba(37, 192, 71, 0.07);
+    }
+
+    .dots {
+      width: 40px;
+      height: 40px;
+      display: inline-grid;
+      place-items: center;
+      color: var(--navy);
+      font-weight: 900;
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 40;
+      max-width: 340px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #11224f;
+      color: #ffffff;
+      box-shadow: 0 18px 42px rgba(16, 24, 40, 0.2);
+      font-size: 14px;
+      line-height: 1.4;
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(7, 22, 61, 0.32);
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-card {
+      width: min(100%, 560px);
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid #e2e8f2;
+      box-shadow: 0 24px 52px rgba(16, 24, 40, 0.16);
+      padding: clamp(18px, 3vw, 24px);
+      display: grid;
+      gap: 18px;
+    }
+
+    .modal-card.form-frame-card {
+      width: min(100%, 1180px);
+      height: min(92vh, 900px);
+      padding: 0;
+      overflow: hidden;
+      gap: 0;
+    }
+
+    .form-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #ffffff;
+    }
+
+    .modal-card h2 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.1;
+      color: var(--navy);
+    }
+
+    .modal-card p {
+      margin: 0;
+      color: #62708f;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .modal-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .info-box {
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid #e6ebf3;
+      background: #fbfdff;
+    }
+
+    .info-box span {
+      display: block;
+      margin-bottom: 6px;
+      color: #7b87a3;
+      font-size: 12px;
+      font-weight: 760;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .info-box strong {
+      color: var(--navy);
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    @media (max-width: 1120px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar-frame {
+        width: 100%;
+        min-width: 100%;
+        height: 100vh;
+        position: static;
+      }
+
+      .page {
+        width: min(100% - 24px, 980px);
+      }
+
+      .header {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        padding-top: 0;
+        justify-content: flex-start;
+      }
+
+      .filter-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .table-card {
+        overflow-x: auto;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: calc(100% - 24px);
+        margin-top: 24px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .subtitle {
+        font-size: 17px;
+      }
+
+      .btn {
+        min-height: 54px;
+        padding: 14px 18px;
+      }
+
+      .btn-date,
+      .btn-primary,
+      .btn-filter {
+        width: 100%;
+      }
+
+      .search-box {
+        height: 52px;
+        padding: 0 16px;
+      }
+
+      .toolbar-meta {
+        font-size: 13px;
+      }
+
+      .modal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .table-footer {
+        height: auto;
+        align-items: flex-start;
+        gap: 18px;
+        flex-direction: column;
+        padding: 18px 20px;
+      }
+
+      .pagination {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <iframe
+      class="sidebar-frame"
+      src="../sidebar.html?page=ReviewHargaSatuan/daftar.html"
+      title="Sidebar Navigation"
+    ></iframe>
+
+    <main class="app-main">
+      <div class="page">
+    <header class="header">
+      <div class="heading-block">
+        <nav class="breadcrumb" aria-label="breadcrumb">
+          <span>Review Harga Satuan</span>
+          <span class="slash">/</span>
+          <span class="active">Daftar</span>
+        </nav>
+        <h1>Daftar Review Harga Satuan</h1>
+        <p class="subtitle">Daftar sekolah untuk proses review harga satuan</p>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" type="button" id="projectButton">
+          <svg width="27" height="27" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+          </svg>
+          Proyek
+        </button>
+
+        <button class="btn btn-filter" type="button" id="filterToggle" aria-expanded="false" aria-controls="filterPanel">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 5h16l-6.2 7v5.2l-3.6 1.8V12L4 5Z" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" />
+          </svg>
+          Filter
+        </button>
+
+        <button class="btn btn-date" type="button" id="dateButton">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M7 3v4M17 3v4M4.5 9h15M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          <span id="dateLabel">1 - 31 Mei 2024</span>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m7 10 5 5 5-5" stroke="currentColor" stroke-width="2.35" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <input id="datePicker" type="date" hidden />
+      </div>
+    </header>
+
+    <section class="search-row" aria-label="pencarian">
+      <div class="filter-panel" id="filterPanel" hidden>
+        <div class="field">
+          <label for="statusFilter">Status</label>
+          <select id="statusFilter">
+            <option value="">Semua status</option>
+            <option value="Draft">Draft</option>
+            <option value="Dalam Review">Dalam Review</option>
+            <option value="Perlu Revisi">Perlu Revisi</option>
+            <option value="Selesai">Selesai</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="locationFilter">Lokasi</label>
+          <select id="locationFilter">
+            <option value="">Semua lokasi</option>
+            <option value="Rembang">Rembang</option>
+            <option value="Pati">Pati</option>
+            <option value="Kudus">Kudus</option>
+            <option value="Blora">Blora</option>
+            <option value="Purworejo">Purworejo</option>
+            <option value="Temanggung">Temanggung</option>
+            <option value="Magelang">Magelang</option>
+            <option value="Wonogiri">Wonogiri</option>
+            <option value="Kebumen">Kebumen</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="projectKeyword">Kata Kunci Proyek</label>
+          <div class="field-row">
+            <input id="projectKeyword" type="text" placeholder="Contoh: Renovasi" />
+            <button class="btn-sm" type="button" id="resetFilter">Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <label class="search-box">
+        <svg width="25" height="25" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2.2" />
+          <path d="m16.4 16.4 4 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+        </svg>
+        <input id="searchInput" type="text" placeholder="Cari nama proyek atau nama sekolah..." />
+      </label>
+      <div class="toolbar-meta">
+        <span id="resultCount">Menampilkan 9 data</span>
+      </div>
+    </section>
+
+    <section class="table-card" aria-label="Daftar review harga satuan">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-project">Nama Proyek</th>
+            <th class="col-school">Nama Sekolah</th>
+            <th class="col-location">Lokasi</th>
+            <th class="col-status">Status</th>
+            <th class="col-action">Action</th>
+          </tr>
+        </thead>
+        <tbody id="projectTableBody">
+          <tr data-project="Reviu Renovasi Sekolah 2025" data-school="SDN 1 Rembang" data-location="Rembang, Jawa Tengah" data-status="Draft">
+            <td>Reviu Renovasi Sekolah 2025</td>
+            <td>SDN 1 Rembang</td>
+            <td>Rembang, Jawa Tengah</td>
+            <td><span class="status blue">Draft</span></td>
+            <td>
+              <div class="action-wrap">
+                <button class="detail-btn detail-link" type="button">Detail</button>
+                <button class="delete-btn" type="button" aria-label="Hapus">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr data-project="Reviu Renovasi Sekolah Tahap 2" data-school="SMP Negeri 2 Pati" data-location="Pati, Jawa Tengah" data-status="Dalam Review">
+            <td>Reviu Renovasi Sekolah Tahap 2</td>
+            <td>SMP Negeri 2 Pati</td>
+            <td>Pati, Jawa Tengah</td>
+            <td><span class="status blue">Dalam Review</span></td>
+            <td><div class="action-wrap"><button class="detail-btn detail-link" type="button">Detail</button><button class="delete-btn" type="button" aria-label="Hapus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>
+          </tr>
+          <tr data-project="Reviu Pembangunan Sekolah 2025" data-school="SMA Negeri 1 Kudus" data-location="Kudus, Jawa Tengah" data-status="Perlu Revisi">
+            <td>Reviu Pembangunan Sekolah 2025</td>
+            <td>SMA Negeri 1 Kudus</td>
+            <td>Kudus, Jawa Tengah</td>
+            <td><span class="status orange">Perlu Revisi</span></td>
+            <td><div class="action-wrap"><button class="detail-btn detail-link" type="button">Detail</button><button class="delete-btn" type="button" aria-label="Hapus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>
+          </tr>
+          <tr data-project="Reviu Renovasi Sekolah 2025" data-school="SDN 3 Blora" data-location="Blora, Jawa Tengah" data-status="Selesai">
+            <td>Reviu Renovasi Sekolah 2025</td>
+            <td>SDN 3 Blora</td>
+            <td>Blora, Jawa Tengah</td>
+            <td><span class="status green">Selesai</span></td>
+            <td><div class="action-wrap"><button class="detail-btn detail-link" type="button">Detail</button><button class="delete-btn" type="button" aria-label="Hapus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>
+          </tr>
+          <tr data-project="Reviu Renovasi Sekolah Tahap 3" data-school="SMP Negeri 1 Purworejo" data-location="Purworejo, Jawa Tengah" data-status="Dalam Review">
+            <td>Reviu Renovasi Sekolah Tahap 3</td>
+            <td>SMP Negeri 1 Purworejo</td>
+            <td>Purworejo, Jawa Tengah</td>
+            <td><span class="status blue">Dalam Review</span></td>
+            <td><div class="action-wrap"><button class="detail-btn detail-link" type="button">Detail</button><button class="delete-btn" type="button" aria-label="Hapus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>
+          </tr>
+          <tr data-project="Reviu Pembangunan Sekolah 2025" data-school="SDN 2 Temanggung" data-location="Temanggung, Jawa Tengah" data-status="Perlu Revisi">
+            <td>Reviu Pembangunan Sekolah 2025</td>
+            <td>SDN 2 Temanggung</td>
+            <td>Temanggung, Jawa Tengah</td>
+            <td><span class="status orange">Perlu Revisi</span></td>
+            <td><div class="action-wrap"><button class="detail-btn detail-link" type="button">Detail</button><button class="delete-btn" type="button" aria-label="Hapus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>
+          </tr>
+          <tr data-project="Reviu Renovasi Sekolah 2025" data-school="SMA Negeri 2 Magelang" data-location="Magelang, Jawa Tengah" data-status="Selesai">
+            <td>Reviu Renovasi Sekolah 2025</td>
+            <td>SMA Negeri 2 Magelang</td>
+            <td>Magelang, Jawa Tengah</td>
+            <td><span class="status green">Selesai</span></td>
+            <td><div class="action-wrap"><button class="detail-btn detail-link" type="button">Detail</button><button class="delete-btn" type="button" aria-label="Hapus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>
+          </tr>
+          <tr data-project="Reviu Pembangunan Ruang Kelas Baru" data-school="SMP Negeri 3 Wonogiri" data-location="Wonogiri, Jawa Tengah" data-status="Draft">
+            <td>Reviu Pembangunan Ruang Kelas Baru</td>
+            <td>SMP Negeri 3 Wonogiri</td>
+            <td>Wonogiri, Jawa Tengah</td>
+            <td><span class="status gray">Draft</span></td>
+            <td><div class="action-wrap"><button class="detail-btn detail-link" type="button">Detail</button><button class="delete-btn" type="button" aria-label="Hapus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>
+          </tr>
+          <tr data-project="Reviu Renovasi Sekolah Tahap 2" data-school="SDN 1 Kebumen" data-location="Kebumen, Jawa Tengah" data-status="Dalam Review">
+            <td>Reviu Renovasi Sekolah Tahap 2</td>
+            <td>SDN 1 Kebumen</td>
+            <td>Kebumen, Jawa Tengah</td>
+            <td><span class="status blue">Dalam Review</span></td>
+            <td><div class="action-wrap"><button class="detail-btn detail-link" type="button">Detail</button><button class="delete-btn" type="button" aria-label="Hapus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <footer class="table-footer">
+        <span id="tableFooterText">Menampilkan 1 - 9 dari 9 data</span>
+        <nav class="pagination" aria-label="pagination">
+          <button class="page-btn" type="button" aria-label="Sebelumnya">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m15 6-6 6 6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <button class="page-btn active" type="button">1</button>
+          <button class="page-btn" type="button">2</button>
+          <button class="page-btn" type="button">3</button>
+          <span class="dots">...</span>
+          <button class="page-btn" type="button">3</button>
+          <button class="page-btn" type="button" aria-label="Berikutnya">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        </nav>
+      </footer>
+    </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="modal" id="projectModal" hidden>
+    <div class="modal-card form-frame-card" role="dialog" aria-modal="true" aria-labelledby="projectTitle">
+      <iframe
+        class="form-frame"
+        id="projectFormFrame"
+        src="detail-draft.html?embed=1&mode=create"
+        title="Form Tambah Proyek"
+      ></iframe>
+    </div>
+  </div>
+
+  <div class="modal" id="deleteConfirmModal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle">
+      <h2 id="deleteConfirmTitle">Hapus proyek?</h2>
+      <p>Data proyek yang dihapus tidak akan tampil lagi di daftar pada browser ini.</p>
+      <div class="modal-grid">
+        <div class="info-box">
+          <span>Nama Proyek</span>
+          <strong id="deleteProjectName">-</strong>
+        </div>
+        <div class="info-box">
+          <span>Nama Sekolah</span>
+          <strong id="deleteSchoolName">-</strong>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-filter" type="button" id="cancelDeleteButton">Batal</button>
+        <button class="btn btn-primary" type="button" id="confirmDeleteButton">Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PROJECT_STORAGE_KEY = 'review-harga-satuan-projects';
+    const PROJECT_DELETED_KEY = 'review-harga-satuan-deleted-project-ids';
+    const PROJECT_DETAIL_KEY = 'review-harga-satuan-project-details';
+    const PROJECT_FLOW_KEY = 'review-harga-satuan-project-flow';
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const locationFilter = document.getElementById('locationFilter');
+    const projectKeyword = document.getElementById('projectKeyword');
+    const resetFilter = document.getElementById('resetFilter');
+    const resultCount = document.getElementById('resultCount');
+    const tableFooterText = document.getElementById('tableFooterText');
+    const projectTableBody = document.getElementById('projectTableBody');
+    const projectFormFrame = document.getElementById('projectFormFrame');
+    const filterToggle = document.getElementById('filterToggle');
+    const filterPanel = document.getElementById('filterPanel');
+    const dateButton = document.getElementById('dateButton');
+    const datePicker = document.getElementById('datePicker');
+    const dateLabel = document.getElementById('dateLabel');
+    const toast = document.getElementById('toast');
+    const projectModal = document.getElementById('projectModal');
+    const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+    const deleteProjectName = document.getElementById('deleteProjectName');
+    const deleteSchoolName = document.getElementById('deleteSchoolName');
+    const cancelDeleteButton = document.getElementById('cancelDeleteButton');
+    const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+    let pendingDeleteProject = null;
+    let rows = [];
+    const baseProjects = Array.from(document.querySelectorAll('#projectTableBody tr')).map((row, index) => ({
+      id: 'seed-' + index,
+      project: row.dataset.project,
+      school: row.dataset.school,
+      location: row.dataset.location,
+      status: row.dataset.status
+    }));
+
+    function getStoredProjects() {
+      try {
+        return JSON.parse(window.localStorage.getItem(PROJECT_STORAGE_KEY) || '[]');
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function getDeletedProjectIds() {
+      try {
+        return JSON.parse(window.localStorage.getItem(PROJECT_DELETED_KEY) || '[]');
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function setDeletedProjectIds(ids) {
+      window.localStorage.setItem(PROJECT_DELETED_KEY, JSON.stringify(ids));
+    }
+
+    function getProjectFlowStore() {
+      try {
+        return JSON.parse(window.localStorage.getItem(PROJECT_FLOW_KEY) || '{}');
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function setProjectFlowStore(store) {
+      window.localStorage.setItem(PROJECT_FLOW_KEY, JSON.stringify(store));
+    }
+
+    function getProjectDetailStore() {
+      try {
+        return JSON.parse(window.localStorage.getItem(PROJECT_DETAIL_KEY) || '{}');
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function setProjectDetailStore(store) {
+      window.localStorage.setItem(PROJECT_DETAIL_KEY, JSON.stringify(store));
+    }
+
+    function getAllProjects() {
+      const deletedIds = new Set(getDeletedProjectIds());
+      return [...baseProjects, ...getStoredProjects()].filter((project) => !deletedIds.has(project.id));
+    }
+
+    function getStatusClass(status) {
+      if (status === 'Selesai') return 'green';
+      if (status === 'Perlu Revisi') return 'orange';
+      if (status === 'Draft') return 'gray';
+      return 'blue';
+    }
+
+    function createRowMarkup(project) {
+      const statusClass = getStatusClass(project.status);
+      return `
+        <tr data-id="${project.id}" data-project="${project.project}" data-school="${project.school}" data-location="${project.location}" data-status="${project.status}">
+          <td>${project.project}</td>
+          <td>${project.school}</td>
+          <td>${project.location}</td>
+          <td><span class="status ${statusClass}">${project.status}</span></td>
+          <td>
+            <div class="action-wrap">
+              <button class="detail-btn detail-link" type="button">Detail</button>
+              <button class="delete-btn" type="button" aria-label="Hapus">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function renderProjects(projects) {
+      projectTableBody.innerHTML = projects.map(createRowMarkup).join('');
+      rows = Array.from(projectTableBody.querySelectorAll('tr'));
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2400);
+    }
+
+    function formatDateLabel(value) {
+      if (!value) {
+        return '1 - 31 Mei 2024';
+      }
+
+      const date = new Date(value + 'T00:00:00');
+      return date.toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
+
+    function applyFilters() {
+      const allProjects = getAllProjects();
+      const keyword = searchInput.value.trim().toLowerCase();
+      const selectedStatus = statusFilter.value.trim().toLowerCase();
+      const selectedLocation = locationFilter.value.trim().toLowerCase();
+      const projectTerm = projectKeyword.value.trim().toLowerCase();
+
+      const filteredProjects = allProjects.filter((projectItem) => {
+        const project = projectItem.project.toLowerCase();
+        const school = projectItem.school.toLowerCase();
+        const location = projectItem.location.toLowerCase();
+        const status = projectItem.status.toLowerCase();
+
+        const matchesKeyword = !keyword || project.includes(keyword) || school.includes(keyword);
+        const matchesStatus = !selectedStatus || status === selectedStatus;
+        const matchesLocation = !selectedLocation || location.includes(selectedLocation);
+        const matchesProject = !projectTerm || project.includes(projectTerm);
+        return matchesKeyword && matchesStatus && matchesLocation && matchesProject;
+      });
+
+      renderProjects(filteredProjects);
+
+      const visibleCount = filteredProjects.length;
+      const totalCount = allProjects.length;
+      resultCount.textContent = 'Menampilkan ' + visibleCount + ' data';
+      tableFooterText.textContent = visibleCount === 0
+        ? 'Tidak ada data yang cocok'
+        : 'Menampilkan 1 - ' + visibleCount + ' dari ' + totalCount + ' data';
+    }
+
+    function openModal(modal) {
+      modal.hidden = false;
+    }
+
+    function closeModal(modal) {
+      modal.hidden = true;
+    }
+
+    function openDeleteModal(projectData) {
+      pendingDeleteProject = projectData;
+      deleteProjectName.textContent = projectData.project;
+      deleteSchoolName.textContent = projectData.school;
+      openModal(deleteConfirmModal);
+    }
+
+    function closeDeleteModal() {
+      pendingDeleteProject = null;
+      closeModal(deleteConfirmModal);
+    }
+
+    function deleteProject(projectId, schoolName) {
+      const storedProjects = getStoredProjects();
+      const storedIndex = storedProjects.findIndex((project) => project.id === projectId);
+
+      if (storedIndex >= 0) {
+        storedProjects.splice(storedIndex, 1);
+        window.localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(storedProjects));
+      } else {
+        const deletedIds = getDeletedProjectIds();
+        if (!deletedIds.includes(projectId)) {
+          deletedIds.push(projectId);
+          setDeletedProjectIds(deletedIds);
+        }
+      }
+
+      const flowStore = getProjectFlowStore();
+      if (flowStore[projectId]) {
+        delete flowStore[projectId];
+        setProjectFlowStore(flowStore);
+      }
+
+      const detailStore = getProjectDetailStore();
+      if (detailStore[projectId]) {
+        delete detailStore[projectId];
+        setProjectDetailStore(detailStore);
+      }
+
+      applyFilters();
+      showToast('Proyek untuk ' + schoolName + ' berhasil dihapus.');
+    }
+
+    function buildStepUrl(row) {
+      const baseParams = {
+        id: row.dataset.id || '',
+        project: row.dataset.project,
+        school: row.dataset.school,
+        location: row.dataset.location,
+        status: row.dataset.status
+      };
+      const flow = getProjectFlowStore()[row.dataset.id || ''];
+      const stage = flow?.stage || 'draft';
+      const params = new URLSearchParams(baseParams);
+
+      if (stage === 'verifikasi') {
+        params.set('stage', 'verifikasi');
+        return 'verifikasi.html?' + params.toString();
+      }
+
+      if (stage === 'convert_rab') {
+        params.set('stage', 'convert_rab');
+        return 'convert.html?' + params.toString();
+      }
+
+      return 'detail-draft.html?' + params.toString();
+    }
+
+    filterToggle.addEventListener('click', () => {
+      const isExpanded = filterToggle.getAttribute('aria-expanded') === 'true';
+      filterToggle.setAttribute('aria-expanded', String(!isExpanded));
+      filterPanel.hidden = isExpanded;
+    });
+
+    dateButton.addEventListener('click', () => {
+      datePicker.showPicker?.();
+      datePicker.click();
+    });
+
+    datePicker.addEventListener('change', () => {
+      dateLabel.textContent = formatDateLabel(datePicker.value);
+      showToast('Tanggal dipilih: ' + dateLabel.textContent);
+    });
+
+    [searchInput, statusFilter, locationFilter, projectKeyword].forEach((element) => {
+      element.addEventListener('input', applyFilters);
+      element.addEventListener('change', applyFilters);
+    });
+
+    resetFilter.addEventListener('click', () => {
+      statusFilter.value = '';
+      locationFilter.value = '';
+      projectKeyword.value = '';
+      searchInput.value = '';
+      applyFilters();
+      showToast('Filter berhasil direset.');
+    });
+
+    document.getElementById('projectButton').addEventListener('click', () => {
+      projectFormFrame.src = 'detail-draft.html?embed=1&mode=create&t=' + Date.now();
+      openModal(projectModal);
+    });
+
+    projectTableBody.addEventListener('click', (event) => {
+      const detailButton = event.target.closest('.detail-link');
+      const deleteButton = event.target.closest('.delete-btn');
+      const row = event.target.closest('tr');
+
+      if (!row) {
+        return;
+      }
+
+      if (deleteButton) {
+        openDeleteModal({
+          id: row.dataset.id,
+          project: row.dataset.project,
+          school: row.dataset.school
+        });
+        return;
+      }
+
+      if (detailButton) {
+        window.location.href = buildStepUrl(row);
+      }
+    });
+
+    cancelDeleteButton.addEventListener('click', closeDeleteModal);
+
+    confirmDeleteButton.addEventListener('click', () => {
+      if (!pendingDeleteProject) {
+        return;
+      }
+
+      deleteProject(pendingDeleteProject.id, pendingDeleteProject.school);
+      closeDeleteModal();
+    });
+
+    [projectModal, deleteConfirmModal].forEach((modal) => {
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+          if (modal === deleteConfirmModal) {
+            closeDeleteModal();
+            return;
+          }
+
+          closeModal(modal);
+        }
+      });
+    });
+
+    window.addEventListener('message', (event) => {
+      if (event.data?.type !== 'review-project-created') {
+        return;
+      }
+
+      closeModal(projectModal);
+      applyFilters();
+      showToast('Proyek baru "' + event.data.projectName + '" berhasil disimpan di browser ini.');
+    });
+
+    applyFilters();
+  </script>
+</body>
+</html>

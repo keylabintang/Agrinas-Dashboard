@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verifikasi Proyek - Review Harga Satuan</title>
+  <style>
+    :root {
+      --navy: #091936;
+      --text: #17233f;
+      --muted: #60708f;
+      --line: #e6ebf3;
+      --soft-line: #edf1f7;
+      --green: #08a63a;
+      --green-soft: #dbf8e5;
+      --blue: #2d7be8;
+      --blue-soft: #eaf3ff;
+      --orange: #ff8b12;
+      --orange-soft: #fff3e3;
+      --red: #ef4758;
+      --red-soft: #ffeaee;
+      --gray: #a9b1c0;
+      --gray-soft: #f2f4f7;
+      --shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
+      --soft-shadow: 0 9px 24px rgba(15, 23, 42, 0.055);
+      --radius-lg: 16px;
+      --radius-md: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #ffffff;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+      background: #f3f6fb;
+    }
+
+    .sidebar-frame {
+      width: 320px;
+      min-width: 320px;
+      height: 100vh;
+      border: 0;
+      background: #ffffff;
+      position: sticky;
+      top: 0;
+    }
+
+    .app-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font-family: inherit;
+    }
+
+    .page {
+      width: min(100% - clamp(20px, 5vw, 88px), 1220px);
+      margin: clamp(20px, 3vw, 30px) auto 56px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: #0d3b71;
+      font-size: 15px;
+      font-weight: 650;
+      margin: 0 0 34px 2px;
+      flex-wrap: wrap;
+    }
+
+    .breadcrumb .current {
+      color: var(--navy);
+      font-weight: 820;
+    }
+
+    .top-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 32px;
+    }
+
+    .title-stack {
+      display: grid;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .hero {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(31px, 3vw, 39px);
+      line-height: 1.05;
+      letter-spacing: -0.046em;
+      font-weight: 850;
+    }
+
+    .project-id {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(15px, 1.4vw, 18px);
+      font-weight: 520;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 30px;
+      padding: 0 14px;
+      border-radius: 999px;
+      color: #1566ce;
+      background: var(--blue-soft);
+      font-size: 14px;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    .status-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .btn {
+      min-height: 48px;
+      border-radius: 10px;
+      border: 1px solid #dbe2ec;
+      background: #fff;
+      color: var(--navy);
+      padding: 12px 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.045);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.075);
+    }
+
+    .btn-primary {
+      color: #fff;
+      border-color: #1e78df;
+      background: linear-gradient(180deg, #3d90fb 0%, #2d7be8 48%, #1f69d5 100%);
+      box-shadow: 0 14px 28px rgba(45, 123, 232, 0.24);
+    }
+
+    .btn-ghost {
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.04);
+    }
+
+    .right-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .stage-card,
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .stage-card {
+      padding: clamp(24px, 4vw, 38px) clamp(20px, 5vw, 68px) 35px;
+      margin-bottom: 28px;
+    }
+
+    .stepper {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      position: relative;
+    }
+
+    .stepper::before {
+      content: "";
+      position: absolute;
+      top: 20px;
+      left: 58px;
+      right: 58px;
+      height: 4px;
+      background: #e2e6ec;
+      border-radius: 999px;
+    }
+
+    .step-progress {
+      position: absolute;
+      top: 20px;
+      left: 58px;
+      height: 4px;
+      width: 0;
+      border-radius: 999px;
+      background: var(--green);
+      transition: width 0.28s ease;
+      z-index: 1;
+    }
+
+    .step {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      min-height: 132px;
+    }
+
+    .step-circle {
+      width: 46px;
+      height: 46px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #aab2c1;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 850;
+      box-shadow: 0 5px 12px rgba(15, 23, 42, 0.11);
+    }
+
+    .step.done .step-circle {
+      background: linear-gradient(180deg, #1fbb63, #0a9c3b);
+    }
+
+    .step.active .step-circle {
+      background: linear-gradient(180deg, #3b86ef, #2169d6);
+      box-shadow: 0 8px 18px rgba(45, 123, 232, 0.25);
+    }
+
+    .step-title {
+      color: #071226;
+      font-size: 18px;
+      line-height: 1.32;
+      font-weight: 830;
+      margin-bottom: 10px;
+    }
+
+    .step-status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      padding: 5px 13px;
+      border-radius: 999px;
+      color: #59687f;
+      background: #eef1f5;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .step.active .step-status {
+      color: #1d66c9;
+      background: #e8f2ff;
+    }
+
+    .step.done .step-status {
+      color: #60708f;
+      background: transparent;
+      padding: 0;
+      min-height: auto;
+    }
+
+    .step-date {
+      display: block;
+      margin-top: 6px;
+      color: #60708f;
+      font-size: 14px;
+      font-weight: 520;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .card {
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: #11a346;
+      background: #dff9ea;
+      flex: 0 0 auto;
+    }
+
+    .card-title {
+      margin: 0;
+      color: var(--navy);
+      font-size: 22px;
+      font-weight: 850;
+      letter-spacing: -0.025em;
+    }
+
+    .card-subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .card-body {
+      padding: 24px 28px 28px;
+    }
+
+    .project-summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .document-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 0 0 22px;
+    }
+
+    .summary-box {
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    }
+
+    .summary-box span {
+      display: block;
+      margin-bottom: 6px;
+      color: #7b87a3;
+      font-size: 12px;
+      font-weight: 760;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .summary-box strong {
+      color: var(--navy);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .summary-box small {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .field {
+      display: grid;
+      gap: 9px;
+    }
+
+    .field label {
+      color: #52627f;
+      font-size: 15px;
+      font-weight: 760;
+    }
+
+    .input,
+    .select,
+    .textarea {
+      width: 100%;
+      border: 1px solid #dbe2ec;
+      border-radius: 12px;
+      background: #fff;
+      color: var(--navy);
+      font-size: 15px;
+      outline: none;
+      box-shadow: inset 0 1px 0 rgba(15, 23, 42, 0.02);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .input,
+    .select {
+      min-height: 48px;
+      padding: 0 14px;
+    }
+
+    .textarea {
+      min-height: 138px;
+      padding: 14px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .select {
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, #60708f 50%), linear-gradient(135deg, #60708f 50%, transparent 50%);
+      background-position: calc(100% - 20px) 20px, calc(100% - 14px) 20px;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+      padding-right: 40px;
+    }
+
+    .input:focus,
+    .select:focus,
+    .textarea:focus {
+      border-color: #2d7be8;
+      box-shadow: 0 0 0 4px rgba(45, 123, 232, 0.1);
+    }
+
+    .helper {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 24px;
+    }
+
+    .status-preview {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 38px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 760;
+      width: fit-content;
+    }
+
+    .status-preview::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .status-preview.blue {
+      color: #1566ce;
+      background: var(--blue-soft);
+    }
+
+    .status-preview.green {
+      color: #068b33;
+      background: var(--green-soft);
+    }
+
+    .status-preview.orange {
+      color: #d97706;
+      background: var(--orange-soft);
+    }
+
+    .status-preview.red {
+      color: #d93245;
+      background: var(--red-soft);
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-size: 13px;
+      font-weight: 760;
+    }
+
+    .chip.ok {
+      color: #0c8f38;
+      background: #effcf4;
+      border-color: #d6f4df;
+    }
+
+    .chip.warn {
+      color: #ca6b06;
+      background: #fff6e8;
+      border-color: #ffe7c5;
+    }
+
+    .chip.bad {
+      color: #d93649;
+      background: #fff0f3;
+      border-color: #ffd8de;
+    }
+
+    .output-copy {
+      margin: 16px 0 0;
+      color: #52627f;
+      font-size: 15px;
+      line-height: 1.65;
+      white-space: pre-line;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .history-item {
+      position: relative;
+      padding: 14px 14px 14px 18px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      overflow: hidden;
+    }
+
+    .history-item::before {
+      content: "";
+      position: absolute;
+      top: 14px;
+      left: 0;
+      bottom: 14px;
+      width: 4px;
+      border-radius: 0 999px 999px 0;
+      background: #d7dfec;
+    }
+
+    .history-item.verifikasi::before {
+      background: #2d7be8;
+    }
+
+    .history-item.saved::before {
+      background: #08a63a;
+    }
+
+    .history-title {
+      margin: 0 0 6px;
+      color: var(--navy);
+      font-size: 15px;
+      font-weight: 820;
+    }
+
+    .history-meta {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .history-note {
+      color: #52627f;
+      font-size: 14px;
+      line-height: 1.55;
+      white-space: pre-line;
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 40;
+      max-width: 340px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #11224f;
+      color: #ffffff;
+      box-shadow: 0 18px 42px rgba(16, 24, 40, 0.2);
+      font-size: 14px;
+      line-height: 1.4;
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1120px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar-frame {
+        width: 100%;
+        min-width: 100%;
+        height: 100vh;
+        position: static;
+      }
+
+      .page {
+        width: min(100% - 24px, 980px);
+      }
+
+      .top-actions,
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .right-actions {
+        justify-content: flex-start;
+      }
+
+      .stepper {
+        overflow-x: auto;
+        gap: 18px;
+        padding-bottom: 10px;
+      }
+
+      .stepper::before,
+      .step-progress {
+        display: none;
+      }
+
+      .step {
+        min-width: 160px;
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .project-summary,
+      .document-summary {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: calc(100% - 24px);
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .right-actions,
+      .form-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .card-header,
+      .card-body {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .stage-card {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <iframe
+      class="sidebar-frame"
+      src="../sidebar.html?page=ReviewHargaSatuan/daftar.html"
+      title="Sidebar Navigation"
+    ></iframe>
+
+    <main class="app-main">
+      <div class="page">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <span>Review Harga Satuan</span>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span>Daftar</span>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span class="current">Verifikasi</span>
+        </nav>
+
+        <section class="top-actions">
+          <div class="title-stack">
+            <div class="hero">
+              <h1>Verifikasi Proyek</h1>
+              <span class="status-pill">Step 2: Verifikasi</span>
+            </div>
+            <p class="project-id">ID Proyek: <span id="projectIdLabel">RVS-2025-000123</span></p>
+          </div>
+
+          <div class="right-actions">
+            <button class="btn btn-ghost" id="backBtn" type="button">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Kembali ke Detail
+            </button>
+            <button class="btn" id="nextStepButton" type="button">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              Lanjut ke Convert RAB
+            </button>
+          </div>
+        </section>
+
+        <section class="stage-card" aria-label="Pipeline stage proyek">
+          <div class="stepper" id="stepper">
+            <div class="step-progress" id="stepProgress"></div>
+          </div>
+        </section>
+
+        <section class="content-grid">
+          <article class="card">
+            <div class="card-header">
+              <div class="card-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                  <path d="M14 3v5h4M9 12h6M9 16h6M9 8h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="card-title">Form Verifikasi</h2>
+                <p class="card-subtitle">Review kelengkapan proposal, RAB sekolah, catatan verifikasi, dan keputusan awal.</p>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="project-summary">
+                <div class="summary-box">
+                  <span>Nama Proyek</span>
+                  <strong id="projectNameText">Renovasi Ruang Kelas</strong>
+                </div>
+                <div class="summary-box">
+                  <span>Nama Sekolah</span>
+                  <strong id="schoolNameText">SDN 1 Sukamaju</strong>
+                </div>
+                <div class="summary-box">
+                  <span>Lokasi</span>
+                  <strong id="locationText">Rembang, Jawa Tengah</strong>
+                </div>
+                <div class="summary-box">
+                  <span>Status Saat Ini</span>
+                  <strong id="statusText">Dalam Verifikasi</strong>
+                </div>
+              </div>
+
+              <div class="document-summary">
+                <div class="summary-box">
+                  <span>Proposal PDF</span>
+                  <strong id="proposalFileText">Belum ada file proposal</strong>
+                  <small>Dokumen proposal yang diunggah dari step draft.</small>
+                </div>
+                <div class="summary-box">
+                  <span>RAB Pengajuan</span>
+                  <strong id="rabFileText">Belum ada file RAB</strong>
+                  <small>File RAB Excel yang siap diverifikasi.</small>
+                </div>
+                <div class="summary-box">
+                  <span>Lampiran Lain</span>
+                  <strong id="attachmentFileText">Belum ada lampiran</strong>
+                  <small id="documentDateText">Tanggal dokumen belum tersedia.</small>
+                </div>
+              </div>
+
+              <form class="form-grid" id="verificationForm">
+                <div class="field">
+                  <label for="proposalStatus">Status Proposal</label>
+                  <select class="select" id="proposalStatus" name="proposalStatus">
+                    <option value="">Pilih status proposal</option>
+                    <option value="Lengkap">Lengkap</option>
+                    <option value="Tidak Lengkap">Tidak Lengkap</option>
+                  </select>
+                  <span class="helper">Gunakan ini untuk review awal kelengkapan dokumen proposal.</span>
+                </div>
+
+                <div class="field">
+                  <label for="rabStatus">Status RAB Excel</label>
+                  <select class="select" id="rabStatus" name="rabStatus">
+                    <option value="">Pilih status RAB</option>
+                    <option value="Lengkap">Lengkap</option>
+                    <option value="Tidak Lengkap">Tidak Lengkap</option>
+                  </select>
+                  <span class="helper">Tentukan apakah file RAB sekolah sudah siap diproses lebih lanjut.</span>
+                </div>
+
+                <div class="field">
+                  <label for="verificationNote">Catatan Verifikasi</label>
+                  <textarea class="textarea" id="verificationNote" name="verificationNote" placeholder="Tulis catatan hasil verifikasi, temuan, atau alasan jika dokumen perlu dilengkapi lagi."></textarea>
+                </div>
+
+                <div class="field">
+                  <label for="decisionStatus">Status</label>
+                  <select class="select" id="decisionStatus" name="decisionStatus">
+                    <option value="">Pilih keputusan awal</option>
+                    <option value="Siap Convert">Siap Convert</option>
+                    <option value="Lanjut Perencanaan">Lanjut Perencanaan</option>
+                    <option value="Batal">Batal</option>
+                  </select>
+                  <span class="helper">Pilih output verifikasi: Siap Convert, Lanjut Perencanaan, atau Batal.</span>
+                </div>
+              </form>
+
+              <div class="form-actions">
+                <button class="btn" id="resetButton" type="button">Reset Form</button>
+                <button class="btn btn-primary" id="saveButtonBottom" type="button">Simpan Verifikasi</button>
+              </div>
+            </div>
+          </article>
+
+          <div class="stack">
+            <aside class="card">
+              <div class="card-header">
+                <div class="card-icon" style="color:#2d7be8;background:#eaf3ff;">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 6h16M4 12h10M4 18h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 class="card-title">Output Verifikasi</h2>
+                  <p class="card-subtitle">Preview status, alasan, dan hasil review saat ini.</p>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="status-preview blue" id="statusPreview">Menunggu Keputusan</div>
+                <div class="badge-row">
+                  <span class="chip warn" id="proposalChip">Proposal: Belum dicek</span>
+                  <span class="chip warn" id="rabChip">RAB: Belum dicek</span>
+                </div>
+                <p class="output-copy" id="outputNote">Catatan verifikasi akan muncul di sini setelah kamu mulai mengisi form.</p>
+              </div>
+            </aside>
+
+            <aside class="card">
+              <div class="card-header">
+                <div class="card-icon" style="color:#ff8b12;background:#fff1dc;">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 8v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 class="card-title">Histori Verifikasi</h2>
+                  <p class="card-subtitle">Riwayat singkat perpindahan proyek sampai tahap verifikasi.</p>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="history-list" id="historyList"></div>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const PROJECT_STORAGE_KEY = "review-harga-satuan-projects";
+    const PROJECT_DETAIL_KEY = "review-harga-satuan-project-details";
+    const PROJECT_FLOW_KEY = "review-harga-satuan-project-flow";
+    const stages = [
+      { key: "draft", title: "Draft", date: "20 Apr 2025" },
+      { key: "verifikasi", title: "Verifikasi", date: "21 Apr 2025" },
+      { key: "convert_rab", title: "Convert RAB", date: "" },
+      { key: "survey_material", title: "Review Harga Material", date: "" },
+      { key: "review_satuan", title: "Review Harga Satuan", date: "" }
+    ];
+
+    const pageParams = new URLSearchParams(window.location.search);
+    const projectData = {
+      id: pageParams.get("id") || "RVS-2025-000123",
+      project: pageParams.get("project") || "Renovasi Ruang Kelas dan Perbaikan Fasilitas Sekolah",
+      school: pageParams.get("school") || "SDN 1 Sukamaju",
+      location: pageParams.get("location") || "Rembang, Jawa Tengah",
+      status: pageParams.get("status") || "Dalam Review",
+      proposal: pageParams.get("proposal") || "Belum ada file proposal",
+      rab: pageParams.get("rab") || "Belum ada file RAB",
+      attachment: pageParams.get("attachment") || "Belum ada lampiran",
+      documentDate: pageParams.get("documentDate") || ""
+    };
+
+    function readProjectDetailStore() {
+      try {
+        return JSON.parse(window.localStorage.getItem(PROJECT_DETAIL_KEY) || "{}");
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function readProjectFlowStore() {
+      try {
+        return JSON.parse(window.localStorage.getItem(PROJECT_FLOW_KEY) || "{}");
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function writeProjectFlowStore(store) {
+      window.localStorage.setItem(PROJECT_FLOW_KEY, JSON.stringify(store));
+    }
+
+    function readStoredProjects() {
+      try {
+        return JSON.parse(window.localStorage.getItem(PROJECT_STORAGE_KEY) || "[]");
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function writeStoredProjects(projects) {
+      window.localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(projects));
+    }
+
+    function updateProjectListStatus(status, stage) {
+      const projects = readStoredProjects();
+      const idx = projects.findIndex(project => project.id === projectData.id);
+      if (idx < 0) return;
+      projects[idx] = {
+        ...projects[idx],
+        status: status || projects[idx].status,
+        stage: stage || projects[idx].stage
+      };
+      writeStoredProjects(projects);
+    }
+
+    function hydrateProjectDataFromStore() {
+      const snapshot = readProjectDetailStore()[projectData.id];
+      if (!snapshot) {
+        const flowSnapshot = readProjectFlowStore()[projectData.id];
+        if (!flowSnapshot) return;
+        if (!pageParams.get("project") && flowSnapshot.project) projectData.project = flowSnapshot.project;
+        if (!pageParams.get("school") && flowSnapshot.school) projectData.school = flowSnapshot.school;
+        if (!pageParams.get("location") && flowSnapshot.location) {
+          projectData.location = [flowSnapshot.location, flowSnapshot.locationDetail || ""].filter(Boolean).join(", ");
+        }
+        if (!pageParams.get("proposal") && flowSnapshot.proposalFile) projectData.proposal = flowSnapshot.proposalFile;
+        if (!pageParams.get("rab") && flowSnapshot.rabFile) projectData.rab = flowSnapshot.rabFile;
+        if (!pageParams.get("attachment") && flowSnapshot.attachmentCount) projectData.attachment = flowSnapshot.attachmentCount;
+        if (!pageParams.get("documentDate") && flowSnapshot.documentDate) projectData.documentDate = flowSnapshot.documentDate;
+        return;
+      }
+
+      if (!pageParams.get("project") && snapshot.project) projectData.project = snapshot.project;
+      if (!pageParams.get("school") && snapshot.school) projectData.school = snapshot.school;
+      if (!pageParams.get("location") && snapshot.locationMain) {
+        projectData.location = [snapshot.locationMain, snapshot.locationSub || ""].filter(Boolean).join(", ");
+      }
+      if (!pageParams.get("proposal") && snapshot.proposalName) projectData.proposal = snapshot.proposalName;
+      if (!pageParams.get("rab") && snapshot.rabName) projectData.rab = snapshot.rabName;
+      if (!pageParams.get("attachment") && snapshot.attachmentCount) projectData.attachment = snapshot.attachmentCount;
+      if (!pageParams.get("documentDate") && snapshot.documentDate) projectData.documentDate = snapshot.documentDate;
+    }
+
+    function persistVerificationFlow() {
+      const flowStore = readProjectFlowStore();
+      const existing = flowStore[projectData.id] || {};
+      flowStore[projectData.id] = {
+        ...existing,
+        id: projectData.id,
+        stage: "verifikasi",
+        status: els.decisionStatus.value || "Dalam Review",
+        project: projectData.project,
+        school: projectData.school,
+        location: projectData.location,
+        proposalFile: projectData.proposal,
+        rabFile: projectData.rab,
+        attachmentCount: projectData.attachment,
+        documentDate: projectData.documentDate,
+        step2: {
+          proposalStatus: els.proposalStatus.value,
+          rabStatus: els.rabStatus.value,
+          verificationNote: els.verificationNote.value.trim(),
+          decisionStatus: els.decisionStatus.value,
+          updatedAt: new Date().toISOString()
+        }
+      };
+      writeProjectFlowStore(flowStore);
+      updateProjectListStatus(els.decisionStatus.value || "Dalam Review", "verifikasi");
+    }
+
+    function hydrateStep2FormFromFlow() {
+      const flow = readProjectFlowStore()[projectData.id];
+      if (!flow?.step2) return;
+
+      if (flow.step2.proposalStatus) els.proposalStatus.value = flow.step2.proposalStatus;
+      if (flow.step2.rabStatus) els.rabStatus.value = flow.step2.rabStatus;
+      if (flow.step2.verificationNote) els.verificationNote.value = flow.step2.verificationNote;
+      if (flow.step2.decisionStatus) els.decisionStatus.value = flow.step2.decisionStatus;
+    }
+
+    const els = {
+      backBtn: document.getElementById("backBtn"),
+      nextStepButton: document.getElementById("nextStepButton"),
+      saveButtonBottom: document.getElementById("saveButtonBottom"),
+      resetButton: document.getElementById("resetButton"),
+      stepper: document.getElementById("stepper"),
+      stepProgress: document.getElementById("stepProgress"),
+      projectIdLabel: document.getElementById("projectIdLabel"),
+      projectNameText: document.getElementById("projectNameText"),
+      schoolNameText: document.getElementById("schoolNameText"),
+      locationText: document.getElementById("locationText"),
+      statusText: document.getElementById("statusText"),
+      proposalFileText: document.getElementById("proposalFileText"),
+      rabFileText: document.getElementById("rabFileText"),
+      attachmentFileText: document.getElementById("attachmentFileText"),
+      documentDateText: document.getElementById("documentDateText"),
+      proposalStatus: document.getElementById("proposalStatus"),
+      rabStatus: document.getElementById("rabStatus"),
+      verificationNote: document.getElementById("verificationNote"),
+      decisionStatus: document.getElementById("decisionStatus"),
+      statusPreview: document.getElementById("statusPreview"),
+      proposalChip: document.getElementById("proposalChip"),
+      rabChip: document.getElementById("rabChip"),
+      outputNote: document.getElementById("outputNote"),
+      historyList: document.getElementById("historyList"),
+      toast: document.getElementById("toast")
+    };
+
+    const historyItems = [
+      {
+        type: "draft",
+        title: "Draft selesai dilengkapi",
+        meta: "20 Apr 2025 • Admin Sekolah",
+        note: "Data proyek dasar sudah dibuat dan siap diajukan ke tahap verifikasi."
+      },
+      {
+        type: "verifikasi",
+        title: "Masuk tahap verifikasi",
+        meta: "21 Apr 2025 • Admin Pusat",
+        note: "Proyek berpindah ke step 2 untuk review proposal dan RAB sekolah."
+      }
+    ];
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => {
+        els.toast.classList.remove("show");
+      }, 2400);
+    }
+
+    function renderStepper(activeStageKey) {
+      els.stepper.querySelectorAll(".step").forEach(step => step.remove());
+
+      const activeIndex = stages.findIndex(stage => stage.key === activeStageKey);
+
+      stages.forEach((stage, index) => {
+        const step = document.createElement("div");
+        let statusText = "Belum Dimulai";
+        let extraClass = "";
+        let circleMarkup = index + 1;
+
+        if (index < activeIndex) {
+          extraClass = "done";
+          statusText = "Selesai";
+          circleMarkup = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          `;
+        } else if (index === activeIndex) {
+          extraClass = "active";
+          statusText = "Sedang Proses";
+        }
+
+        step.className = `step ${extraClass}`.trim();
+        step.innerHTML = `
+          <div class="step-circle">${circleMarkup}</div>
+          <div class="step-title">${stage.title}</div>
+          <div class="step-status">${statusText}</div>
+          <span class="step-date">${stage.date || ""}</span>
+        `;
+        els.stepper.appendChild(step);
+      });
+
+      if (activeIndex <= 0) {
+        els.stepProgress.style.width = "0px";
+        return;
+      }
+
+      const maxWidth = els.stepper.clientWidth - 116;
+      const segmentWidth = maxWidth / (stages.length - 1);
+      els.stepProgress.style.width = `${Math.max(0, segmentWidth * activeIndex)}px`;
+    }
+
+    function setProjectSummary() {
+      els.projectIdLabel.textContent = projectData.id;
+      els.projectNameText.textContent = projectData.project;
+      els.schoolNameText.textContent = projectData.school;
+      els.locationText.textContent = projectData.location;
+      els.statusText.textContent = "Dalam Verifikasi";
+      els.proposalFileText.textContent = projectData.proposal;
+      els.rabFileText.textContent = projectData.rab;
+      els.attachmentFileText.textContent = projectData.attachment;
+      els.documentDateText.textContent = projectData.documentDate
+        ? `Tanggal dokumen masuk: ${projectData.documentDate.replace("T", ", ")}`
+        : "Tanggal dokumen belum tersedia.";
+    }
+
+    function getChipState(value, label) {
+      if (value === "Lengkap") {
+        return { className: "chip ok", text: `${label}: Lengkap` };
+      }
+
+      if (value === "Tidak Lengkap") {
+        return { className: "chip bad", text: `${label}: Tidak Lengkap` };
+      }
+
+      return { className: "chip warn", text: `${label}: Belum dicek` };
+    }
+
+    function getStatusPreview(value) {
+      if (value === "Siap Convert") {
+        return { className: "status-preview green", text: value };
+      }
+
+      if (value === "Lanjut Perencanaan") {
+        return { className: "status-preview orange", text: value };
+      }
+
+      if (value === "Batal") {
+        return { className: "status-preview red", text: value };
+      }
+
+      return { className: "status-preview blue", text: "Menunggu Keputusan" };
+    }
+
+    function renderHistory() {
+      els.historyList.innerHTML = historyItems.map(item => `
+        <div class="history-item ${item.type}">
+          <h3 class="history-title">${item.title}</h3>
+          <div class="history-meta">${item.meta}</div>
+          <div class="history-note">${item.note}</div>
+        </div>
+      `).join("");
+    }
+
+    function updateOutput() {
+      const proposalState = getChipState(els.proposalStatus.value, "Proposal");
+      const rabState = getChipState(els.rabStatus.value, "RAB");
+      const previewState = getStatusPreview(els.decisionStatus.value);
+      const note = els.verificationNote.value.trim();
+
+      els.proposalChip.className = proposalState.className;
+      els.proposalChip.textContent = proposalState.text;
+      els.rabChip.className = rabState.className;
+      els.rabChip.textContent = rabState.text;
+      els.statusPreview.className = previewState.className;
+      els.statusPreview.textContent = previewState.text;
+      els.outputNote.textContent = note || "Catatan verifikasi akan muncul di sini setelah kamu mulai mengisi form.";
+    }
+
+    function resetForm() {
+      els.proposalStatus.value = "";
+      els.rabStatus.value = "";
+      els.verificationNote.value = "";
+      els.decisionStatus.value = "";
+      updateOutput();
+      showToast("Form verifikasi berhasil direset.");
+    }
+
+    function buildDetailUrl() {
+      const params = new URLSearchParams({
+        id: projectData.id,
+        project: projectData.project,
+        school: projectData.school,
+        location: projectData.location,
+        status: "Dalam Review"
+      });
+      return `detail-draft.html?${params.toString()}`;
+    }
+
+    function buildConvertRabUrl() {
+      const params = new URLSearchParams({
+        id: projectData.id,
+        project: projectData.project,
+        school: projectData.school,
+        location: projectData.location,
+        status: els.decisionStatus.value || "Siap Convert",
+        proposal: projectData.proposal,
+        rab: projectData.rab,
+        attachment: projectData.attachment,
+        documentDate: projectData.documentDate,
+        proposalStatus: els.proposalStatus.value,
+        rabStatus: els.rabStatus.value,
+        verificationNote: els.verificationNote.value.trim(),
+        decisionStatus: els.decisionStatus.value
+      });
+      return `convert.html?${params.toString()}`;
+    }
+
+    function validateForm() {
+      if (!els.proposalStatus.value || !els.rabStatus.value || !els.verificationNote.value.trim() || !els.decisionStatus.value) {
+        showToast("Lengkapi seluruh field verifikasi terlebih dahulu.");
+        return false;
+      }
+
+      return true;
+    }
+
+    function saveVerification(showSuccess = true) {
+      if (!validateForm()) {
+        return false;
+      }
+
+      persistVerificationFlow();
+
+      const timestamp = new Date().toLocaleString("id-ID", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+      historyItems.unshift({
+        type: "saved",
+        title: `Verifikasi disimpan: ${els.decisionStatus.value}`,
+        meta: `${timestamp} • Admin Pusat`,
+        note: [
+          `Proposal: ${els.proposalStatus.value}`,
+          `RAB Excel: ${els.rabStatus.value}`,
+          "",
+          els.verificationNote.value.trim()
+        ].join("\n")
+      });
+
+      renderHistory();
+      updateOutput();
+      if (showSuccess) {
+        showToast(`Verifikasi proyek "${projectData.school}" berhasil disimpan.`);
+      }
+      return true;
+    }
+
+    [els.proposalStatus, els.rabStatus, els.verificationNote, els.decisionStatus].forEach(element => {
+      element.addEventListener("input", updateOutput);
+      element.addEventListener("change", updateOutput);
+    });
+
+    [els.backBtn].filter(Boolean).forEach(button => {
+      button.addEventListener("click", () => {
+        window.location.href = buildDetailUrl();
+      });
+    });
+
+    [els.nextStepButton].filter(Boolean).forEach(button => {
+      button.addEventListener("click", () => {
+        const isSaved = saveVerification(false);
+        if (!isSaved) {
+          return;
+        }
+
+        const flowStore = readProjectFlowStore();
+        if (flowStore[projectData.id]) {
+          flowStore[projectData.id].stage = "convert_rab";
+          flowStore[projectData.id].status = els.decisionStatus.value || "Siap Convert";
+          writeProjectFlowStore(flowStore);
+        }
+        updateProjectListStatus(els.decisionStatus.value || "Siap Convert", "convert_rab");
+
+        showToast("Verifikasi selesai. Lanjut ke tahap Convert RAB.");
+        window.setTimeout(() => {
+          window.location.href = buildConvertRabUrl();
+        }, 250);
+      });
+    });
+
+    els.saveButtonBottom.addEventListener("click", saveVerification);
+    els.resetButton.addEventListener("click", resetForm);
+
+    hydrateProjectDataFromStore();
+    setProjectSummary();
+    hydrateStep2FormFromFlow();
+    renderStepper("verifikasi");
+    renderHistory();
+    updateOutput();
+
+    window.addEventListener("resize", () => renderStepper("verifikasi"));
+  </script>
+</body>
+</html>

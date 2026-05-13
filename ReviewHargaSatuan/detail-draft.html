@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detail Proyek - Review Harga Satuan</title>
+  <style>
+    :root {
+      --navy: #091936;
+      --text: #17233f;
+      --muted: #60708f;
+      --line: #e6ebf3;
+      --soft-line: #edf1f7;
+      --green: #08a63a;
+      --green-dark: #009632;
+      --blue: #2d7be8;
+      --blue-soft: #eaf3ff;
+      --gray: #a9b1c0;
+      --gray-soft: #f0f2f5;
+      --red: #ff4b58;
+      --orange: #ff8b12;
+      --purple: #8e6ad8;
+      --teal: #22b8c7;
+      --bg: #ffffff;
+      --shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
+      --soft-shadow: 0 9px 24px rgba(15, 23, 42, 0.055);
+      --radius-lg: 16px;
+      --radius-md: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #ffffff;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body.embed-mode {
+      background: #ffffff;
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+      background: #f3f6fb;
+    }
+
+    .sidebar-frame {
+      width: 320px;
+      min-width: 320px;
+      height: 100vh;
+      border: 0;
+      background: #ffffff;
+      position: sticky;
+      top: 0;
+    }
+
+    .app-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font-family: inherit;
+    }
+
+    .page {
+      width: min(100% - clamp(20px, 5vw, 88px), 1192px);
+      margin: clamp(20px, 3vw, 29px) auto 54px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: #0d3b71;
+      font-size: 15px;
+      font-weight: 650;
+      margin: 0 0 38px 2px;
+      flex-wrap: wrap;
+    }
+
+    .breadcrumb svg {
+      color: #6b7892;
+    }
+
+    .breadcrumb .current {
+      color: var(--navy);
+      font-weight: 800;
+    }
+
+    .top-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 24px;
+      margin-bottom: 56px;
+    }
+
+    .title-stack {
+      display: grid;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .btn {
+      min-height: 50px;
+      border-radius: 8px;
+      border: 1px solid #dbe2ec;
+      background: #fff;
+      color: var(--navy);
+      padding: 12px 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 11px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.045);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.075);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      color: #fff;
+      border-color: #02a435;
+      background: linear-gradient(180deg, #0bc642 0%, #03af38 45%, #009e33 100%);
+      box-shadow: 0 14px 28px rgba(0, 157, 55, 0.25);
+    }
+
+    .btn-back {
+      min-height: 44px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 760;
+      justify-self: start;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.04);
+    }
+
+    #continueVerifyBtn {
+      min-width: 214px;
+    }
+
+    #continueVerifyBtn.is-disabled {
+      cursor: not-allowed;
+      color: #8ca1c7;
+      border-color: #dbe3f0;
+      background: #eef3fa;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .right-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .hero {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(31px, 3vw, 39px);
+      line-height: 1.05;
+      letter-spacing: -0.046em;
+      font-weight: 850;
+    }
+
+    .project-id {
+      margin: 12px 0 0;
+      color: #60708f;
+      font-size: clamp(15px, 1.4vw, 18px);
+      font-weight: 520;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 30px;
+      padding: 0 14px;
+      border-radius: 999px;
+      color: #008c30;
+      background: #dbf8e5;
+      font-size: 14px;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    .status-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .stage-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: clamp(24px, 4vw, 38px) clamp(20px, 5vw, 68px) 35px;
+      margin-bottom: 34px;
+    }
+
+    .stepper {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      position: relative;
+    }
+
+    .stepper::before {
+      content: "";
+      position: absolute;
+      top: 20px;
+      left: 58px;
+      right: 58px;
+      height: 4px;
+      background: #e2e6ec;
+      border-radius: 999px;
+    }
+
+    .step-progress {
+      position: absolute;
+      top: 20px;
+      left: 58px;
+      height: 4px;
+      width: 0;
+      border-radius: 999px;
+      background: var(--green);
+      transition: width 0.28s ease;
+      z-index: 1;
+    }
+
+    .step {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      min-height: 132px;
+    }
+
+    .step-circle {
+      width: 46px;
+      height: 46px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #aab2c1;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 850;
+      box-shadow: 0 5px 12px rgba(15, 23, 42, 0.11);
+    }
+
+    .step.done .step-circle {
+      background: linear-gradient(180deg, #1fbb63, #0a9c3b);
+    }
+
+    .step.active .step-circle {
+      background: linear-gradient(180deg, #3b86ef, #2169d6);
+      box-shadow: 0 8px 18px rgba(45, 123, 232, 0.25);
+    }
+
+    .step-title {
+      color: #071226;
+      font-size: 18px;
+      line-height: 1.32;
+      font-weight: 830;
+      margin-bottom: 10px;
+    }
+
+    .step-status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      padding: 5px 13px;
+      border-radius: 999px;
+      color: #59687f;
+      background: #eef1f5;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .step.active .step-status {
+      color: #1d66c9;
+      background: #e8f2ff;
+    }
+
+    .step.done .step-status {
+      color: #60708f;
+      background: transparent;
+      padding: 0;
+      min-height: auto;
+    }
+
+    .step-date {
+      display: block;
+      margin-top: 6px;
+      color: #60708f;
+      font-size: 14px;
+      font-weight: 520;
+    }
+
+    .form-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .form-header {
+      min-height: 105px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 24px 31px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header-icon,
+    .row-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+
+    .header-icon {
+      color: #11a346;
+      background: #dff9ea;
+    }
+
+    .form-header h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 22px;
+      font-weight: 850;
+      letter-spacing: -0.025em;
+    }
+
+    .form-body {
+      padding: 0 clamp(18px, 3vw, 31px) clamp(20px, 3vw, 31px);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 50px minmax(180px, 220px) minmax(0, 1fr);
+      gap: 28px;
+      align-items: center;
+      min-height: 88px;
+      border-bottom: 1px solid var(--soft-line);
+    }
+
+    .form-row.tall {
+      min-height: 132px;
+      align-items: start;
+      padding: 18px 0;
+    }
+
+    .form-row.no-line {
+      border-bottom: 0;
+    }
+
+    .row-icon.green { color: #10a646; background: #e3faec; }
+    .row-icon.blue { color: #2876da; background: #edf5ff; }
+    .row-icon.purple { color: #8364c8; background: #f1ebff; }
+    .row-icon.orange { color: #ff8b12; background: #fff1dc; }
+    .row-icon.red { color: #ff4b58; background: #ffe7eb; }
+    .row-icon.yellow { color: #ff9d1e; background: #fff1d9; }
+    .row-icon.teal { color: #12aebc; background: #ddf8fb; }
+    .row-icon.gray { color: #597292; background: #eff5fc; }
+
+    .label {
+      color: #52627f;
+      font-size: 16px;
+      font-weight: 650;
+    }
+
+    .input,
+    .textarea,
+    .select {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      color: var(--navy);
+      background: transparent;
+      font-size: 16px;
+      font-weight: 800;
+      outline: none;
+      padding: 9px 12px;
+      transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .textarea {
+      min-height: 74px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .select {
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, #60708f 50%), linear-gradient(135deg, #60708f 50%, transparent 50%);
+      background-position: calc(100% - 20px) 20px, calc(100% - 14px) 20px;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    .input:not(:disabled),
+    .textarea:not(:disabled),
+    .select:not(:disabled) {
+      border-color: #dbe2ec;
+      background: #fff;
+      box-shadow: inset 0 1px 0 rgba(15, 23, 42, 0.02);
+    }
+
+    .input:focus,
+    .textarea:focus,
+    .select:focus {
+      border-color: #2d7be8;
+      box-shadow: 0 0 0 4px rgba(45, 123, 232, 0.1);
+    }
+
+    .input:disabled,
+    .textarea:disabled,
+    .select:disabled {
+      opacity: 1;
+      cursor: default;
+    }
+
+    .muted-line {
+      display: block;
+      margin-top: 3px;
+      color: #60708f;
+      font-size: 15px;
+      font-weight: 520;
+    }
+
+    .file-card {
+      width: 100%;
+      min-height: 85px;
+      border: 1px solid #dbe2ec;
+      border-radius: 10px;
+      background: #fff;
+      display: grid;
+      grid-template-columns: 50px 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 22px;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.035);
+      min-width: 0;
+    }
+
+    .file-info strong,
+    .attachment-info strong {
+      display: block;
+      color: var(--navy);
+      font-size: 16px;
+      font-weight: 850;
+      margin-bottom: 5px;
+    }
+
+    .file-info span,
+    .attachment-info span {
+      display: block;
+      color: #52627f;
+      font-size: 15px;
+      font-weight: 520;
+    }
+
+    .file-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .icon-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 9px;
+      border: 1px solid #dbe2ec;
+      background: #fff;
+      color: #52627f;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      box-shadow: 0 5px 12px rgba(15, 23, 42, 0.025);
+    }
+
+    .icon-btn:hover {
+      color: var(--blue);
+      border-color: #c8ddfb;
+      background: #f8fbff;
+    }
+
+    .file-input-inline {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .edit-mode .file-input-inline {
+      display: block;
+    }
+
+    .file-input-inline input {
+      width: 100%;
+      padding: 10px;
+      border: 1px dashed #cbd5e3;
+      border-radius: 8px;
+      color: #52627f;
+      background: #fbfcff;
+    }
+
+    .attachment-box {
+      min-height: 86px;
+      border: 1px solid #dbe2ec;
+      border-radius: 10px;
+      background: #fff;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.035);
+      cursor: pointer;
+      min-width: 0;
+    }
+
+    .alert-note {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      align-items: start;
+      gap: 16px;
+      margin-top: 38px;
+      padding: 26px 26px;
+      min-height: 116px;
+      color: #07356f;
+      background: linear-gradient(135deg, #eef7ff 0%, #e9f3ff 100%);
+      border: 1px solid #d6eaff;
+      border-radius: 10px;
+    }
+
+    .alert-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: #286bd5;
+      margin-top: 2px;
+    }
+
+    .alert-note strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+      font-weight: 850;
+    }
+
+    .alert-note textarea {
+      color: #07356f;
+      font-size: 17px;
+      line-height: 1.55;
+      font-weight: 520;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      width: 100%;
+      resize: vertical;
+      min-height: 52px;
+      outline: none;
+    }
+
+    .alert-note textarea:disabled {
+      opacity: 1;
+    }
+
+    .meta-footer {
+      display: grid;
+      grid-template-columns: 1fr 1px 1fr;
+      gap: 31px;
+      margin-top: 34px;
+      color: #60708f;
+      font-size: 14px;
+      font-weight: 520;
+    }
+
+    .meta-divider {
+      width: 1px;
+      background: var(--line);
+    }
+
+    .meta-footer strong {
+      display: block;
+      color: var(--navy);
+      font-size: 15px;
+      font-weight: 850;
+      margin: 5px 0 5px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 28px;
+      bottom: 28px;
+      min-width: 260px;
+      max-width: 420px;
+      padding: 15px 18px;
+      border-radius: 12px;
+      color: #07356f;
+      background: #eef7ff;
+      border: 1px solid #cfe7ff;
+      box-shadow: 0 20px 48px rgba(15, 23, 42, 0.16);
+      font-size: 14px;
+      font-weight: 700;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 99;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .embed-mode .app-shell {
+      display: block;
+      min-height: auto;
+      background: #ffffff;
+    }
+
+    .embed-mode .sidebar-frame,
+    .embed-mode .breadcrumb,
+    .embed-mode #backBtn,
+    .embed-mode #exportBtn,
+    .embed-mode .stage-card {
+      display: none !important;
+    }
+
+    .stage-row {
+      display: none !important;
+    }
+
+    .embed-mode .app-main {
+      min-width: auto;
+    }
+
+    .embed-mode .page {
+      width: min(100% - 32px, 1080px);
+      margin: 16px auto 24px;
+    }
+
+    .embed-mode .top-actions {
+      grid-template-columns: 1fr;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .embed-mode .right-actions {
+      justify-content: flex-start;
+    }
+
+    .embed-mode #continueVerifyBtn {
+      display: none !important;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 960px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar-frame {
+        width: 100%;
+        min-width: 100%;
+        height: 100vh;
+        position: static;
+      }
+
+      .top-actions {
+        grid-template-columns: 1fr;
+        margin-bottom: 28px;
+      }
+
+      .right-actions {
+        justify-content: flex-start;
+      }
+
+      .stage-card {
+        padding: 30px 22px;
+        overflow-x: auto;
+      }
+
+      .stepper {
+        min-width: 850px;
+      }
+
+      .form-row {
+        grid-template-columns: 50px 1fr;
+        gap: 18px;
+        padding: 16px 0;
+      }
+
+      .label {
+        grid-column: 2;
+      }
+
+      .field {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .breadcrumb {
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .hero {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .right-actions {
+        width: 100%;
+      }
+
+      .title-stack {
+        gap: 14px;
+      }
+
+      .stage-card {
+        padding: 22px 16px;
+      }
+
+      .form-header {
+        height: auto;
+        padding: 20px;
+        align-items: flex-start;
+      }
+
+      .form-body {
+        padding: 0 20px 24px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .label {
+        grid-column: auto;
+      }
+
+      .field {
+        grid-column: auto;
+      }
+
+      .file-card {
+        grid-template-columns: 48px 1fr;
+        padding: 14px 16px;
+      }
+
+      .file-actions {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .attachment-box {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+
+      .alert-note {
+        grid-template-columns: 1fr;
+        padding: 20px 18px;
+      }
+
+      .meta-footer {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .meta-divider {
+        width: 100%;
+        height: 1px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <iframe
+      class="sidebar-frame"
+      src="../sidebar.html?page=ReviewHargaSatuan/daftar.html"
+      title="Sidebar Navigation"
+    ></iframe>
+
+    <main class="app-main">
+      <div class="page">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <span>Review Harga Satuan</span>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <span>Daftar</span>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <span class="current">Detail Proyek</span>
+    </nav>
+
+    <section class="top-actions">
+      <div class="title-stack">
+        <button class="btn btn-back" id="backBtn" type="button">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Kembali
+        </button>
+
+        <div class="hero">
+          <h1>Detail Proyek</h1>
+          <span class="status-pill" id="projectBadge">Draft</span>
+        </div>
+        <p class="project-id">ID Proyek: <span id="projectIdLabel">RVS-2025-000123</span></p>
+      </div>
+
+      <div class="right-actions">
+
+        <button class="btn" id="exportBtn" type="button">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 4v10M8 10l4 4 4-4M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Unduh Ringkasan
+        </button>
+
+        <button class="btn btn-primary" id="editBtn" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 20h4L18.5 9.5a2.2 2.2 0 0 0-4-4L4 16v4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+            <path d="m13 7 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          Edit Proyek
+        </button>
+
+        <a class="btn is-disabled" id="continueVerifyBtn" aria-disabled="true" href="verifikasi.html">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Lanjutkan Verifikasi
+        </a>
+      </div>
+    </section>
+
+    <section class="stage-card" aria-label="Pipeline stage proyek">
+      <input type="hidden" id="currentStage" value="draft" />
+      <div class="stepper" id="stepper">
+        <div class="step-progress" id="stepProgress"></div>
+      </div>
+    </section>
+
+    <form class="form-card" id="projectForm">
+      <div class="form-header">
+        <div class="header-icon">
+          <svg width="27" height="27" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+            <path d="M14 3v5h4M9 12h6M9 16h6M9 8h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </div>
+        <h2>Informasi Proyek</h2>
+      </div>
+
+      <div class="form-body">
+        <div class="form-row">
+          <div class="row-icon green">
+            <svg width="27" height="27" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+              <path d="M14 3v5h4M9 12h6M9 16h6M9 8h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </div>
+          <label class="label" for="projectName">Nama Proyek</label>
+          <div class="field">
+            <input class="input" id="projectName" name="projectName" type="text" value="Renovasi Ruang Kelas dan Perbaikan Fasilitas Sekolah" disabled />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="row-icon blue">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m3 9 9-5 9 5-9 5-9-5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+              <path d="M7 11.5V16c3 2 7 2 10 0v-4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </div>
+          <label class="label" for="schoolName">Sekolah</label>
+          <div class="field">
+            <input class="input" id="schoolName" name="schoolName" type="text" value="SDN 1 Sukamaju" disabled />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="row-icon purple">
+            <svg width="27" height="27" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 22s7-6.12 7-13A7 7 0 0 0 5 9c0 6.88 7 13 7 13Z" fill="currentColor" />
+              <circle cx="12" cy="9" r="2.5" fill="#fff" />
+            </svg>
+          </div>
+          <label class="label" for="locationMain">Lokasi</label>
+          <div class="field">
+            <input class="input" id="locationMain" name="locationMain" type="text" value="Kab. Sleman, Prov. Daerah Istimewa Yogyakarta" disabled />
+            <input class="input" id="locationSub" name="locationSub" type="text" value="Kec. Ngaglik, Desa Sukamaju" disabled style="margin-top: 3px; font-weight: 560; color: #60708f;" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="row-icon orange">
+            <svg width="27" height="27" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 3v4M17 3v4M4.5 9h15M6 5h12a2 2 0 0 1 2 2v12H4V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              <path d="M8 13h2M12 13h2M16 13h2M8 17h2M12 17h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </div>
+          <label class="label" for="programYear">Tahun Program</label>
+          <div class="field">
+            <input class="input" id="programYear" name="programYear" type="number" value="2025" disabled />
+          </div>
+        </div>
+
+        <div class="form-row stage-row" hidden>
+          <div class="row-icon blue">
+            <svg width="27" height="27" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 4v14M8 8l4-4 4 4M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <label class="label" for="stageSelect">Stage</label>
+          <div class="field">
+            <select class="select" id="stageSelect" name="stage" disabled>
+              <option value="draft" selected>Draft</option>
+              <option value="verifikasi">Verifikasi</option>
+              <option value="convert_rab">Convert RAB</option>
+              <option value="survey_material">Review Harga Material</option>
+              <option value="review_satuan">Review Harga Satuan</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row tall">
+          <div class="row-icon red">
+            <svg width="27" height="27" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+              <path d="M14 3v5h4" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+              <path d="M9 16c1.3-3.8 3-3.8 4.2 0M10 14h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+            </svg>
+          </div>
+          <label class="label" for="proposalFile">Proposal PDF</label>
+          <div class="field">
+            <div class="file-card">
+              <div class="row-icon red">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                  <path d="M14 3v5h4" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                  <path d="M9 16c1.3-3.8 3-3.8 4.2 0M10 14h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                </svg>
+              </div>
+              <div class="file-info">
+                <strong id="proposalName">Belum ada file proposal</strong>
+                <span id="proposalMeta">Unggah file PDF proposal proyek</span>
+                <div class="file-input-inline">
+                  <input id="proposalFile" name="proposalFile" type="file" accept="application/pdf" />
+                </div>
+              </div>
+              <div class="file-actions">
+                <button class="icon-btn" type="button" data-action="preview" data-file="" aria-label="Preview proposal">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" stroke-width="2" />
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
+                  </svg>
+                </button>
+                <button class="icon-btn" type="button" data-action="download-file" data-file="" aria-label="Unduh proposal">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 4v10M8 10l4 4 4-4M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row tall">
+          <div class="row-icon yellow">
+            <svg width="27" height="27" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+              <path d="M14 3v5h4" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+              <path d="M8 17h8M8 13h2M12 13h4M8 9h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </div>
+          <label class="label" for="rabFile">RAB Pengajuan</label>
+          <div class="field">
+            <div class="file-card">
+              <div class="row-icon green">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 3h8l4 4v14H6V3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                  <path d="M14 3v5h4" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                  <path d="M8 17h8M8 13h2M12 13h4M8 9h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+              </div>
+              <div class="file-info">
+                <strong id="rabName">Belum ada file RAB</strong>
+                <span id="rabMeta">Unggah file Excel RAB pengajuan</span>
+                <div class="file-input-inline">
+                  <input id="rabFile" name="rabFile" type="file" accept=".xlsx,.xls" />
+                </div>
+              </div>
+              <div class="file-actions">
+                <button class="icon-btn" type="button" data-action="preview" data-file="" aria-label="Preview RAB">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" stroke-width="2" />
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
+                  </svg>
+                </button>
+                <button class="icon-btn" type="button" data-action="download-file" data-file="" aria-label="Unduh RAB">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 4v10M8 10l4 4 4-4M5 20h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row tall">
+          <div class="row-icon teal">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M3.5 7.5h6l1.6 2H20a1.5 1.5 0 0 1 1.5 1.5v7A2.5 2.5 0 0 1 19 20.5H5A2.5 2.5 0 0 1 2.5 18V9a1.5 1.5 0 0 1 1.5-1.5Z" fill="currentColor" opacity="0.16" />
+              <path d="M3 7h6l2 2h10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <label class="label" for="attachmentFile">Lampiran Lain</label>
+          <div class="field">
+            <div class="attachment-box" id="attachmentBox">
+              <div class="attachment-info">
+                <strong id="attachmentCount">Belum ada lampiran</strong>
+                <span id="attachmentMeta">Tambahkan lampiran pendukung bila diperlukan</span>
+                <div class="file-input-inline">
+                  <input id="attachmentFile" name="attachmentFile" type="file" multiple />
+                </div>
+              </div>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="m9 6 6 6-6 6" stroke="#52627f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="row-icon gray">
+            <svg width="27" height="27" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" />
+              <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <label class="label" for="documentDate">Tanggal Dokumen Masuk</label>
+          <div class="field">
+            <input class="input" id="documentDate" name="documentDate" type="datetime-local" value="2025-04-20T14:30" disabled />
+          </div>
+        </div>
+
+        <div class="alert-note">
+          <div class="alert-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 10v7M12 7h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div>
+            <strong>Catatan</strong>
+            <textarea id="note" name="note" disabled>Data proyek ini masih berada pada stage Draft. Lengkapi seluruh informasi proyek dan dokumen sebelum masuk ke proses verifikasi.</textarea>
+          </div>
+        </div>
+
+        <div class="meta-footer">
+          <div>
+            <span>Dibuat oleh</span>
+            <strong>Admin Pusat</strong>
+            <span>20 Apr 2025 14:30 WIB</span>
+          </div>
+          <div class="meta-divider" aria-hidden="true"></div>
+          <div>
+            <span>Terakhir diperbarui</span>
+            <strong id="updatedBy">Admin Pusat</strong>
+            <span id="updatedAt">20 Apr 2025 14:30 WIB</span>
+          </div>
+        </div>
+      </div>
+    </form>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const PROJECT_STORAGE_KEY = "review-harga-satuan-projects";
+    const PROJECT_DETAIL_KEY = "review-harga-satuan-project-details";
+    const PROJECT_FLOW_KEY = "review-harga-satuan-project-flow";
+    const stages = [
+      { key: "draft", title: "Draft", date: "20 Apr 2025" },
+      { key: "verifikasi", title: "Verifikasi", date: "21 Apr 2025" },
+      { key: "convert_rab", title: "Convert RAB", date: "" },
+      { key: "survey_material", title: "Review Harga\nMaterial", date: "" },
+      { key: "review_satuan", title: "Review Harga\nSatuan", date: "" }
+    ];
+
+    const els = {
+      body: document.body,
+      form: document.getElementById("projectForm"),
+      stepper: document.getElementById("stepper"),
+      stepProgress: document.getElementById("stepProgress"),
+      stageSelect: document.getElementById("stageSelect"),
+      currentStage: document.getElementById("currentStage"),
+      projectBadge: document.getElementById("projectBadge"),
+      exportBtn: document.getElementById("exportBtn"),
+      editBtn: document.getElementById("editBtn"),
+      continueVerifyBtn: document.getElementById("continueVerifyBtn"),
+      backBtn: document.getElementById("backBtn"),
+      toast: document.getElementById("toast"),
+      updatedBy: document.getElementById("updatedBy"),
+      updatedAt: document.getElementById("updatedAt"),
+      proposalFile: document.getElementById("proposalFile"),
+      rabFile: document.getElementById("rabFile"),
+      attachmentFile: document.getElementById("attachmentFile"),
+      proposalName: document.getElementById("proposalName"),
+      proposalMeta: document.getElementById("proposalMeta"),
+      rabName: document.getElementById("rabName"),
+      rabMeta: document.getElementById("rabMeta"),
+      attachmentCount: document.getElementById("attachmentCount"),
+      attachmentMeta: document.getElementById("attachmentMeta"),
+      locationMain: document.getElementById("locationMain"),
+      locationSub: document.getElementById("locationSub"),
+      documentDate: document.getElementById("documentDate")
+    };
+
+    const pageParams = new URLSearchParams(window.location.search);
+    const isEmbedMode = pageParams.get("embed") === "1";
+    const isCreateMode = pageParams.get("mode") === "create";
+    const projectIdParam = pageParams.get("id");
+    const projectNameParam = pageParams.get("project");
+    const schoolParam = pageParams.get("school");
+    const locationParam = pageParams.get("location");
+    const statusParam = pageParams.get("status");
+    const stageParam = pageParams.get("stage");
+    let isEditMode = false;
+
+    function readStoredProjects() {
+      try {
+        return JSON.parse(window.localStorage.getItem(PROJECT_STORAGE_KEY) || "[]");
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function writeStoredProjects(projects) {
+      window.localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(projects));
+    }
+
+    function updateProjectListStatus(projectId, status, stage) {
+      const projects = readStoredProjects();
+      const idx = projects.findIndex(project => project.id === projectId);
+      if (idx < 0) return;
+      projects[idx] = {
+        ...projects[idx],
+        status: status || projects[idx].status,
+        stage: stage || projects[idx].stage
+      };
+      writeStoredProjects(projects);
+    }
+
+    function readProjectDetailStore() {
+      try {
+        return JSON.parse(window.localStorage.getItem(PROJECT_DETAIL_KEY) || "{}");
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function writeProjectDetailStore(store) {
+      window.localStorage.setItem(PROJECT_DETAIL_KEY, JSON.stringify(store));
+    }
+
+    function readProjectFlowStore() {
+      try {
+        return JSON.parse(window.localStorage.getItem(PROJECT_FLOW_KEY) || "{}");
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function writeProjectFlowStore(store) {
+      window.localStorage.setItem(PROJECT_FLOW_KEY, JSON.stringify(store));
+    }
+
+    function getCurrentProjectId() {
+      return (document.getElementById("projectIdLabel").textContent || "").trim();
+    }
+
+    function syncFileActionDataset() {
+      const proposalDownloadBtn = document.querySelector("[data-action='download-file'][aria-label='Unduh proposal']");
+      const proposalPreviewBtn = document.querySelector("[data-action='preview'][aria-label='Preview proposal']");
+      const rabDownloadBtn = document.querySelector("[data-action='download-file'][aria-label='Unduh RAB']");
+      const rabPreviewBtn = document.querySelector("[data-action='preview'][aria-label='Preview RAB']");
+
+      const proposalFile = els.proposalName.textContent !== "Belum ada file proposal" ? els.proposalName.textContent : "";
+      const rabFile = els.rabName.textContent !== "Belum ada file RAB" ? els.rabName.textContent : "";
+
+      if (proposalDownloadBtn) proposalDownloadBtn.dataset.file = proposalFile;
+      if (proposalPreviewBtn) proposalPreviewBtn.dataset.file = proposalFile;
+      if (rabDownloadBtn) rabDownloadBtn.dataset.file = rabFile;
+      if (rabPreviewBtn) rabPreviewBtn.dataset.file = rabFile;
+    }
+
+    function buildVerificationUrl() {
+      const params = new URLSearchParams({
+        id: pageParams.get("id") || els.projectIdLabel.textContent.trim(),
+        project: els.projectName.value.trim(),
+        school: els.schoolName.value.trim(),
+        location: [els.locationMain.value.trim(), els.locationSub.value.trim()].filter(Boolean).join(", "),
+        status: "Dalam Review",
+        stage: "verifikasi",
+        proposal: els.proposalName.textContent.trim(),
+        rab: els.rabName.textContent.trim(),
+        attachment: els.attachmentCount.textContent.trim(),
+        documentDate: els.documentDate.value.trim()
+      });
+      return `verifikasi.html?${params.toString()}`;
+    }
+
+    window.__goToVerification = function goToVerificationFromWindow() {
+      saveProjectDetailSnapshot();
+      const projectId = pageParams.get("id") || els.projectIdLabel.textContent.trim();
+      const flowStore = readProjectFlowStore();
+      if (flowStore[projectId]) {
+        flowStore[projectId].stage = "verifikasi";
+        flowStore[projectId].status = "Dalam Review";
+        flowStore[projectId].step1 = {
+          ...(flowStore[projectId].step1 || {}),
+          completed: true,
+          handedOffToVerificationAt: new Date().toISOString()
+        };
+        writeProjectFlowStore(flowStore);
+      }
+      updateProjectListStatus(projectId, "Dalam Review", "verifikasi");
+      try {
+        window.location.href = buildVerificationUrl();
+      } catch (error) {
+        window.location.href = "verifikasi.html";
+      }
+    };
+
+    function saveProjectDetailSnapshot() {
+      if (isCreateMode) {
+        return;
+      }
+
+      const projectId = getCurrentProjectId();
+      if (!projectId) {
+        return;
+      }
+
+      const store = readProjectDetailStore();
+      store[projectId] = {
+        project: document.getElementById("projectName").value.trim(),
+        school: document.getElementById("schoolName").value.trim(),
+        locationMain: document.getElementById("locationMain").value.trim(),
+        locationSub: document.getElementById("locationSub").value.trim(),
+        programYear: document.getElementById("programYear").value.trim(),
+        documentDate: document.getElementById("documentDate").value.trim(),
+        note: document.getElementById("note").value.trim(),
+        proposalName: els.proposalName.textContent.trim(),
+        proposalMeta: els.proposalMeta.textContent.trim(),
+        rabName: els.rabName.textContent.trim(),
+        rabMeta: els.rabMeta.textContent.trim(),
+        attachmentCount: els.attachmentCount.textContent.trim(),
+        attachmentMeta: els.attachmentMeta.textContent.trim(),
+        status: els.projectBadge.textContent.trim(),
+        updatedAt: new Date().toISOString()
+      };
+      writeProjectDetailStore(store);
+
+      const flowStore = readProjectFlowStore();
+      const previousFlow = flowStore[projectId] || {};
+      flowStore[projectId] = {
+        ...previousFlow,
+        id: projectId,
+        stage: previousFlow.stage || "draft",
+        status: previousFlow.status || "Draft",
+        project: document.getElementById("projectName").value.trim(),
+        school: document.getElementById("schoolName").value.trim(),
+        location: document.getElementById("locationMain").value.trim(),
+        locationDetail: document.getElementById("locationSub").value.trim(),
+        programYear: document.getElementById("programYear").value.trim(),
+        documentDate: document.getElementById("documentDate").value.trim(),
+        note: document.getElementById("note").value.trim(),
+        proposalFile: els.proposalName.textContent.trim(),
+        rabFile: els.rabName.textContent.trim(),
+        attachmentCount: els.attachmentCount.textContent.trim(),
+        step1: {
+          completed: hasCompleteData(),
+          updatedAt: new Date().toISOString()
+        }
+      };
+      writeProjectFlowStore(flowStore);
+    }
+
+    function loadProjectDetailSnapshot(projectId) {
+      if (!projectId) {
+        return;
+      }
+
+      const store = readProjectDetailStore();
+      const snapshot = store[projectId];
+      if (!snapshot) {
+        return;
+      }
+
+      if (snapshot.project) document.getElementById("projectName").value = snapshot.project;
+      if (snapshot.school) document.getElementById("schoolName").value = snapshot.school;
+      if (snapshot.locationMain) document.getElementById("locationMain").value = snapshot.locationMain;
+      if (snapshot.locationSub !== undefined) document.getElementById("locationSub").value = snapshot.locationSub;
+      if (snapshot.programYear) document.getElementById("programYear").value = snapshot.programYear;
+      if (snapshot.documentDate) document.getElementById("documentDate").value = snapshot.documentDate;
+      if (snapshot.note) document.getElementById("note").value = snapshot.note;
+      if (snapshot.proposalName) els.proposalName.textContent = snapshot.proposalName;
+      if (snapshot.proposalMeta) els.proposalMeta.textContent = snapshot.proposalMeta;
+      if (snapshot.rabName) els.rabName.textContent = snapshot.rabName;
+      if (snapshot.rabMeta) els.rabMeta.textContent = snapshot.rabMeta;
+      if (snapshot.attachmentCount) els.attachmentCount.textContent = snapshot.attachmentCount;
+      if (snapshot.attachmentMeta) els.attachmentMeta.textContent = snapshot.attachmentMeta;
+      if (snapshot.status) els.projectBadge.textContent = snapshot.status;
+
+      syncFileActionDataset();
+    }
+
+    function slugProjectId() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const serial = String(readStoredProjects().length + 1).padStart(6, "0");
+      return `RVS-${year}-${serial}`;
+    }
+
+    if (isEmbedMode) {
+      document.body.classList.add("embed-mode");
+    }
+
+    if (!isEmbedMode && !isCreateMode && stageParam === "verifikasi") {
+      const redirectParams = new URLSearchParams(window.location.search);
+      redirectParams.delete("stage");
+      window.location.replace(`verifikasi.html?${redirectParams.toString()}`);
+    }
+
+    if (isCreateMode) {
+      document.title = "Tambah Proyek - Review Harga Satuan";
+      document.querySelector("h1").textContent = "Tambah Proyek";
+      document.getElementById("projectIdLabel").textContent = slugProjectId();
+      document.getElementById("projectName").value = "";
+      document.getElementById("schoolName").value = "";
+      document.getElementById("locationMain").value = "";
+      document.getElementById("locationSub").value = "";
+      document.getElementById("documentDate").value = "";
+      document.getElementById("note").value = "Isi data proyek baru lalu lanjutkan ke tahap verifikasi ketika seluruh dokumen dan informasi sudah lengkap.";
+      els.projectBadge.textContent = "Draft Baru";
+      els.editBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>Simpan Draft`;
+      setEditMode(true);
+    } else {
+      if (projectIdParam) {
+        document.getElementById("projectIdLabel").textContent = projectIdParam;
+      }
+
+      if (projectNameParam) {
+        document.getElementById("projectName").value = projectNameParam;
+      }
+
+      if (schoolParam) {
+        document.getElementById("schoolName").value = schoolParam;
+      }
+
+      if (locationParam) {
+        document.getElementById("locationMain").value = locationParam;
+        document.getElementById("locationSub").value = "";
+      }
+
+      if (statusParam) {
+        els.projectBadge.textContent = statusParam;
+      }
+
+      loadProjectDetailSnapshot(projectIdParam || getCurrentProjectId());
+    }
+
+    function renderStepper(activeKey) {
+      const activeIndex = Math.max(0, stages.findIndex(stage => stage.key === activeKey));
+      els.stepper.querySelectorAll(".step").forEach(step => step.remove());
+
+      stages.forEach((stage, index) => {
+        const step = document.createElement("div");
+        step.className = "step";
+        if (index < activeIndex) step.classList.add("done");
+        if (index === activeIndex) step.classList.add("active");
+
+        const circleContent = index < activeIndex
+          ? `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 12 4 4 8-9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>`
+          : String(index + 1);
+
+        let statusText = "Belum Dimulai";
+        if (index < activeIndex) statusText = "Selesai";
+        if (index === activeIndex) statusText = index === 0 ? "Sedang Draft" : "Sedang Proses";
+
+        step.innerHTML = `
+          <div class="step-circle">${circleContent}</div>
+          <div class="step-title">${stage.title.replace("\n", "<br>")}</div>
+          <span class="step-status">${statusText}</span>
+          ${stage.date && index <= activeIndex ? `<span class="step-date">${stage.date}</span>` : ""}
+        `;
+
+        els.stepper.appendChild(step);
+      });
+
+      const maxWidth = els.stepper.clientWidth - 116;
+      const progressWidth = activeIndex === 0 ? 0 : maxWidth * (activeIndex / (stages.length - 1));
+      els.stepProgress.style.width = `${progressWidth}px`;
+      els.currentStage.value = activeKey;
+      updateBadge(activeKey);
+    }
+
+    function updateBadge(stageKey) {
+      const activeStage = stages.find(stage => stage.key === stageKey);
+      const label = stageKey === "draft" ? "Draft" : activeStage ? "Dalam Proses" : "Draft";
+      els.projectBadge.textContent = label;
+    }
+
+    function setEditMode(enabled) {
+      isEditMode = enabled;
+      els.body.classList.toggle("edit-mode", enabled);
+
+      const editableFields = els.form.querySelectorAll("input, textarea, select");
+      editableFields.forEach(field => {
+        field.disabled = !enabled;
+      });
+
+      els.editBtn.innerHTML = enabled
+        ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>Simpan Proyek`
+        : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20h4L18.5 9.5a2.2 2.2 0 0 0-4-4L4 16v4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /><path d="m13 7 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>Edit Proyek`;
+
+      if (!enabled) {
+        saveProjectDetailSnapshot();
+        els.updatedBy.textContent = "Admin Pusat";
+        els.updatedAt.textContent = formatNowWib();
+        showToast("Perubahan proyek berhasil disimpan.");
+      } else {
+        showToast("Mode edit aktif. Semua field sudah bisa diubah.");
+      }
+
+      updateVerificationButton();
+    }
+
+    function hasUploadedFiles() {
+      return (
+        els.proposalName.textContent !== "Belum ada file proposal" &&
+        els.rabName.textContent !== "Belum ada file RAB" &&
+        els.attachmentCount.textContent !== "Belum ada lampiran"
+      );
+    }
+
+    function hasCompleteData() {
+      const requiredValues = [
+        document.getElementById("projectName").value.trim(),
+        document.getElementById("schoolName").value.trim(),
+        document.getElementById("locationMain").value.trim(),
+        document.getElementById("programYear").value.trim(),
+        document.getElementById("documentDate").value.trim(),
+        document.getElementById("note").value.trim()
+      ];
+
+      return requiredValues.every(Boolean) && hasUploadedFiles();
+    }
+
+    function hasMinimumDraftData() {
+      const requiredValues = [
+        document.getElementById("projectName").value.trim(),
+        document.getElementById("schoolName").value.trim(),
+        document.getElementById("locationMain").value.trim()
+      ];
+
+      return requiredValues.every(Boolean);
+    }
+
+    function updateVerificationButton() {
+      const isComplete = hasCompleteData();
+      els.continueVerifyBtn.setAttribute("aria-disabled", String(!isComplete));
+      els.continueVerifyBtn.classList.toggle("is-disabled", !isComplete);
+      els.continueVerifyBtn.title = isComplete
+        ? "Semua data wajib sudah lengkap"
+        : "Lengkapi data proyek, proposal, RAB, dan lampiran untuk lanjut verifikasi";
+    }
+
+    function formatNowWib() {
+      const date = new Date();
+      return date.toLocaleString("id-ID", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Jakarta"
+      }).replace(".", ":") + " WIB";
+    }
+
+    function getFormData() {
+      return {
+        idProyek: document.getElementById("projectIdLabel").textContent,
+        stage: els.stageSelect.options[els.stageSelect.selectedIndex].text,
+        namaProyek: document.getElementById("projectName").value,
+        sekolah: document.getElementById("schoolName").value,
+        lokasi: document.getElementById("locationMain").value,
+        detailLokasi: document.getElementById("locationSub").value,
+        tahunProgram: document.getElementById("programYear").value,
+        proposalPdf: els.proposalName.textContent,
+        rabPengajuan: els.rabName.textContent,
+        lampiranLain: els.attachmentCount.textContent,
+        tanggalDokumenMasuk: document.getElementById("documentDate").value,
+        catatan: document.getElementById("note").value
+      };
+    }
+
+    function persistCreatedProject() {
+      const data = getFormData();
+      const storedProjects = readStoredProjects();
+      const projectRecord = {
+        id: data.idProyek,
+        project: data.namaProyek,
+        school: data.sekolah,
+        location: data.lokasi,
+        locationDetail: data.detailLokasi,
+        status: "Draft",
+        stage: "draft",
+        programYear: data.tahunProgram,
+        proposalFile: data.proposalPdf,
+        rabFile: data.rabPengajuan,
+        attachments: data.lampiranLain,
+        documentDate: data.tanggalDokumenMasuk,
+        note: data.catatan,
+        createdAt: new Date().toISOString()
+      };
+
+      storedProjects.unshift(projectRecord);
+      writeStoredProjects(storedProjects);
+
+      const detailStore = readProjectDetailStore();
+      detailStore[projectRecord.id] = {
+        project: projectRecord.project,
+        school: projectRecord.school,
+        locationMain: projectRecord.location,
+        locationSub: projectRecord.locationDetail || "",
+        programYear: projectRecord.programYear || "",
+        documentDate: projectRecord.documentDate || "",
+        note: projectRecord.note || "",
+        proposalName: projectRecord.proposalFile || "Belum ada file proposal",
+        proposalMeta: "File lokal siap diproses",
+        rabName: projectRecord.rabFile || "Belum ada file RAB",
+        rabMeta: "File lokal siap diproses",
+        attachmentCount: projectRecord.attachments || "Belum ada lampiran",
+        attachmentMeta: "Lampiran siap diperiksa",
+        status: "Draft",
+        updatedAt: new Date().toISOString()
+      };
+      writeProjectDetailStore(detailStore);
+
+      const flowStore = readProjectFlowStore();
+      flowStore[projectRecord.id] = {
+        id: projectRecord.id,
+        stage: "draft",
+        status: "Draft",
+        project: projectRecord.project,
+        school: projectRecord.school,
+        location: projectRecord.location,
+        locationDetail: projectRecord.locationDetail || "",
+        programYear: projectRecord.programYear || "",
+        documentDate: projectRecord.documentDate || "",
+        note: projectRecord.note || "",
+        proposalFile: projectRecord.proposalFile || "Belum ada file proposal",
+        rabFile: projectRecord.rabFile || "Belum ada file RAB",
+        attachmentCount: projectRecord.attachments || "Belum ada lampiran",
+        step1: {
+          completed: true,
+          updatedAt: new Date().toISOString()
+        }
+      };
+      writeProjectFlowStore(flowStore);
+
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: "review-project-created",
+          projectId: projectRecord.id,
+          projectName: projectRecord.project
+        }, "*");
+      }
+
+      showToast(`Draft proyek "${projectRecord.project}" berhasil disimpan di browser ini.`);
+
+      if (!isEmbedMode) {
+        saveProjectDetailSnapshot();
+        window.setTimeout(() => {
+          window.location.href = "daftar.html";
+        }, 500);
+      }
+    }
+
+    function exportSummary() {
+      const data = getFormData();
+      const lines = [
+        "RINGKASAN DETAIL PROYEK",
+        "========================",
+        `ID Proyek: ${data.idProyek}`,
+        `Stage: ${data.stage}`,
+        `Nama Proyek: ${data.namaProyek}`,
+        `Sekolah: ${data.sekolah}`,
+        `Lokasi: ${data.lokasi}`,
+        `Detail Lokasi: ${data.detailLokasi}`,
+        `Tahun Program: ${data.tahunProgram}`,
+        `Proposal PDF: ${data.proposalPdf}`,
+        `RAB Pengajuan: ${data.rabPengajuan}`,
+        `Lampiran Lain: ${data.lampiranLain}`,
+        `Tanggal Dokumen Masuk: ${data.tanggalDokumenMasuk}`,
+        "",
+        "Catatan:",
+        data.catatan
+      ];
+
+      downloadTextFile("ringkasan-detail-proyek.txt", lines.join("\n"));
+      showToast("Ringkasan proyek berhasil diunduh.");
+    }
+
+    function downloadTextFile(filename, content) {
+      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => {
+        els.toast.classList.remove("show");
+      }, 2400);
+    }
+
+    els.stageSelect.addEventListener("change", event => {
+      renderStepper(event.target.value);
+      showToast(`Stage pipeline dipindahkan ke "${event.target.options[event.target.selectedIndex].text}".`);
+    });
+
+    els.editBtn.addEventListener("click", () => {
+      if (isCreateMode && isEditMode) {
+        if (!hasMinimumDraftData()) {
+          showToast("Isi minimal nama proyek, sekolah, dan lokasi utama untuk menyimpan draft.");
+          return;
+        }
+
+        persistCreatedProject();
+        return;
+      }
+
+      setEditMode(!isEditMode);
+    });
+
+    els.exportBtn.addEventListener("click", exportSummary);
+
+    els.continueVerifyBtn.href = buildVerificationUrl();
+
+    els.continueVerifyBtn.addEventListener("click", event => {
+      event.preventDefault();
+      window.__goToVerification();
+    });
+
+    els.backBtn.addEventListener("click", () => {
+      window.location.href = "daftar.html";
+    });
+
+    document.querySelectorAll("[data-action='preview']").forEach(button => {
+      button.addEventListener("click", () => {
+        if (!button.dataset.file) {
+          showToast("Belum ada file untuk dipreview.");
+          return;
+        }
+        showToast(`Preview dokumen "${button.dataset.file}" aktif. Sambungkan ke viewer PDF atau spreadsheet.`);
+      });
+    });
+
+    document.querySelectorAll("[data-action='download-file']").forEach(button => {
+      button.addEventListener("click", () => {
+        if (!button.dataset.file) {
+          showToast("Belum ada file untuk diunduh.");
+          return;
+        }
+        downloadTextFile(button.dataset.file.replace(/\.(pdf|xlsx|xls)$/i, ".txt"), `Dummy download untuk ${button.dataset.file}`);
+        showToast(`Dokumen "${button.dataset.file}" berhasil diunduh sebagai dummy file.`);
+      });
+    });
+
+    document.getElementById("attachmentBox").addEventListener("click", event => {
+      if (event.target.tagName.toLowerCase() === "input") return;
+      showToast("Detail lampiran aktif. Buat modal lampiran di implementasi lanjutannya.");
+    });
+
+    els.proposalFile.addEventListener("change", event => {
+      const file = event.target.files[0];
+      const downloadBtn = document.querySelector("[data-action='download-file'][aria-label='Unduh proposal']");
+      const previewBtn = document.querySelector("[data-action='preview'][aria-label='Preview proposal']");
+      if (file) {
+        els.proposalName.textContent = file.name;
+        els.proposalMeta.textContent = "File lokal siap diproses";
+        if (previewBtn) previewBtn.dataset.file = file.name;
+        if (downloadBtn) downloadBtn.dataset.file = file.name;
+      } else {
+        els.proposalName.textContent = "Belum ada file proposal";
+        els.proposalMeta.textContent = "Unggah file PDF proposal proyek";
+        if (previewBtn) previewBtn.dataset.file = "";
+        if (downloadBtn) downloadBtn.dataset.file = "";
+      }
+      saveProjectDetailSnapshot();
+      updateVerificationButton();
+    });
+
+    els.rabFile.addEventListener("change", event => {
+      const file = event.target.files[0];
+      const downloadBtn = document.querySelector("[data-action='download-file'][aria-label='Unduh RAB']");
+      const previewBtn = document.querySelector("[data-action='preview'][aria-label='Preview RAB']");
+      if (file) {
+        els.rabName.textContent = file.name;
+        els.rabMeta.textContent = "File lokal siap diproses";
+        if (previewBtn) previewBtn.dataset.file = file.name;
+        if (downloadBtn) downloadBtn.dataset.file = file.name;
+      } else {
+        els.rabName.textContent = "Belum ada file RAB";
+        els.rabMeta.textContent = "Unggah file Excel RAB pengajuan";
+        if (previewBtn) previewBtn.dataset.file = "";
+        if (downloadBtn) downloadBtn.dataset.file = "";
+      }
+      saveProjectDetailSnapshot();
+      updateVerificationButton();
+    });
+
+    els.attachmentFile.addEventListener("change", event => {
+      const count = event.target.files.length;
+      if (count) {
+        els.attachmentCount.textContent = `${count} file lampiran`;
+        els.attachmentMeta.textContent = "Lampiran siap diperiksa";
+      } else {
+        els.attachmentCount.textContent = "Belum ada lampiran";
+        els.attachmentMeta.textContent = "Tambahkan lampiran pendukung bila diperlukan";
+      }
+      saveProjectDetailSnapshot();
+      updateVerificationButton();
+    });
+
+    els.form.querySelectorAll("input, textarea, select").forEach(field => {
+      field.addEventListener("input", updateVerificationButton);
+      field.addEventListener("change", updateVerificationButton);
+    });
+
+    window.addEventListener("resize", () => renderStepper(els.stageSelect.value));
+
+    renderStepper("draft");
+    updateVerificationButton();
+  </script>
+</body>
+</html>
