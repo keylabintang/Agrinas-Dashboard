@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Agrinas Dashboard</title>
+  <style>
+    :root {
+      --navy: #0d1b3f;
+      --navy-soft: #24345d;
+      --muted: #667085;
+      --line: #e6edf6;
+      --card: #ffffff;
+      --green: #2fc94d;
+      --green-dark: #0e8f2e;
+      --green-soft: #ebfff0;
+      --blue-soft: #edf6ff;
+      --shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
+      --soft-shadow: 0 10px 22px rgba(15, 23, 42, 0.045);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--navy);
+      background:
+        radial-gradient(circle at top left, rgba(47, 201, 77, 0.16), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(47, 147, 232, 0.14), transparent 22%),
+        linear-gradient(180deg, #f8fbff 0%, #f1f6fc 100%);
+    }
+
+    a,
+    button,
+    input {
+      font: inherit;
+    }
+
+    .page {
+      width: min(1220px, calc(100% - 40px));
+      margin: 0 auto;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 28px 0;
+    }
+
+    .login-shell {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(420px, 460px);
+      gap: 0;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(230, 237, 246, 0.95);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(14px);
+      overflow: hidden;
+    }
+
+    .hero-card {
+      padding: 34px;
+      overflow: hidden;
+      position: relative;
+      min-height: 620px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 1px solid rgba(230, 237, 246, 0.95);
+    }
+
+    .hero-card::before,
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-card::before {
+      width: 360px;
+      height: 360px;
+      top: -130px;
+      right: -130px;
+      background: radial-gradient(circle, rgba(47, 201, 77, 0.22), transparent 68%);
+    }
+
+    .hero-card::after {
+      width: 300px;
+      height: 300px;
+      bottom: -120px;
+      left: -100px;
+      background: radial-gradient(circle, rgba(47, 147, 232, 0.18), transparent 70%);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+
+    .brand-mark {
+      width: 68px;
+      height: 68px;
+      border-radius: 18px;
+      object-fit: contain;
+      background: #fff;
+      padding: 8px;
+      box-shadow: 0 14px 28px rgba(14, 143, 46, 0.12);
+    }
+
+    .brand-title {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-subtitle {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+      max-width: 640px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(40px, 5vw, 64px);
+      line-height: 0.98;
+      letter-spacing: -0.05em;
+      font-weight: 850;
+    }
+
+    .hero-desc {
+      margin-top: 18px;
+      max-width: 500px;
+      color: var(--navy-soft);
+      font-size: 16px;
+      line-height: 1.55;
+      font-weight: 520;
+    }
+
+    .login-card {
+      padding: 34px 30px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .login-header {
+      margin-bottom: 22px;
+    }
+
+    .login-header h2 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      font-weight: 820;
+    }
+
+    .login-header p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      font-weight: 520;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 760;
+    }
+
+    .field input {
+      width: 100%;
+      min-height: 58px;
+      border: 1px solid #dbe4ef;
+      border-radius: 14px;
+      background: #fff;
+      color: var(--navy);
+      padding: 0 18px;
+      font-size: 15px;
+      font-weight: 650;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .field input:focus {
+      border-color: #2f93e8;
+      box-shadow: 0 0 0 4px rgba(47, 147, 232, 0.11);
+    }
+
+    .field-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .check {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .check input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--green-dark);
+    }
+
+    .forgot-link {
+      color: var(--green-dark);
+      text-decoration: none;
+      font-weight: 780;
+    }
+
+    .login-btn {
+      width: 100%;
+      min-height: 60px;
+      border: 0;
+      border-radius: 16px;
+      color: #fff;
+      background: linear-gradient(180deg, #2fc94d 0%, #1eaf3b 48%, #0e8f2e 100%);
+      box-shadow: 0 18px 34px rgba(14, 143, 46, 0.22);
+      font-size: 16px;
+      font-weight: 820;
+    }
+
+    .login-btn:hover {
+      filter: brightness(1.02);
+    }
+
+    @media (max-width: 1080px) {
+      .login-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card {
+        min-height: auto;
+        border-right: 0;
+        border-bottom: 1px solid rgba(230, 237, 246, 0.95);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: calc(100% - 24px);
+      }
+
+      .hero-card,
+      .login-card {
+        padding: 22px 18px;
+      }
+
+      .field-row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="login-shell">
+      <section class="hero-card" aria-label="Informasi platform">
+        <div class="hero-copy">
+          <div class="brand">
+            <img class="brand-mark" src="Assets/agrinas.png" alt="Logo Agrinas" />
+            <div>
+              <div class="brand-title">Agrinas Dashboard</div>
+              <div class="brand-subtitle">Monitoring progres revitalisasi sekolah dan review harga satuan</div>
+            </div>
+          </div>
+
+          <h1>Masuk ke Agrinas Dashboard.</h1>
+          <p class="hero-desc">
+            Monitoring proyek dan review harga satuan dalam satu tempat.
+          </p>
+        </div>
+      </section>
+
+      <section class="login-card" aria-label="Form login">
+        <div class="login-header">
+          <h2>Login</h2>
+          <p>Masuk untuk melanjutkan.</p>
+        </div>
+
+        <form class="form-grid" id="loginForm">
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="admin@agrinas.id" required />
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" placeholder="Masukkan password" required />
+          </div>
+
+          <div class="field-row">
+            <label class="check" for="rememberMe">
+              <input id="rememberMe" name="rememberMe" type="checkbox" checked />
+              <span>Ingat saya di perangkat ini</span>
+            </label>
+            <a class="forgot-link" href="#">Lupa password?</a>
+          </div>
+
+          <button class="login-btn" type="submit">Masuk ke Dashboard</button>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      window.location.href = "dashboard.html";
+    });
+  </script>
+</body>
+</html>
