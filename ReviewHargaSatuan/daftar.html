@@ -1140,6 +1140,16 @@
         return 'convert.html?' + params.toString();
       }
 
+      if (stage === 'survey_material' || stage === 'review_material') {
+        params.set('stage', 'review_material');
+        return 'review-harga-material.html?' + params.toString();
+      }
+
+      if (stage === 'review_satuan') {
+        params.set('stage', 'review_satuan');
+        return 'review-harga-satuan.html?' + params.toString();
+      }
+
       return 'detail-draft.html?' + params.toString();
     }
 

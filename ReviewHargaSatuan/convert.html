@@ -551,21 +551,38 @@
       color: #da6500;
     }
 
-    .detail-btn {
-      height: 42px;
-      min-width: 101px;
-      border-radius: 8px;
-      border: 1px solid rgba(8, 166, 58, 0.42);
-      color: var(--green);
-      background: #fff;
+    .action-buttons {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 9px;
-      font-size: 14px;
-      font-weight: 820;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .detail-btn,
+    .delete-btn {
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      padding: 0;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       box-shadow: none;
       transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .detail-btn {
+      border: 1px solid rgba(8, 166, 58, 0.42);
+      color: var(--green);
+      background: #fff;
+    }
+
+    .delete-btn {
+      border: 1px solid #ffd3d6;
+      color: #e42535;
+      background: #fff5f6;
     }
 
     .note-box {
@@ -639,6 +656,14 @@
       padding: 22px 24px 24px;
     }
 
+    .modal-body p {
+      margin: 0;
+      color: #5f6f89;
+      font-size: 15px;
+      line-height: 1.6;
+      font-weight: 620;
+    }
+
     .modal-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -677,6 +702,39 @@
       color: var(--navy);
       display: grid;
       place-items: center;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .modal-cancel-btn,
+    .modal-delete-btn {
+      height: 46px;
+      min-width: 126px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 820;
+    }
+
+    .modal-cancel-btn {
+      border: 1px solid #dbe2ed;
+      background: #fff;
+      color: var(--navy);
+    }
+
+    .modal-delete-btn {
+      border: 1px solid #e43847;
+      background: linear-gradient(180deg, #ff6f79 0%, #f54352 52%, #e42535 100%);
+      color: #fff;
+      box-shadow: 0 14px 26px rgba(228, 37, 53, 0.22);
     }
 
     .toast {
@@ -793,7 +851,7 @@
   <div class="app-shell">
     <iframe
       class="sidebar-frame"
-      src="../sidebar.html?page=ReviewHargaSatuan/daftar.html"
+      src="../sidebar.html?page=ReviewHargaSatuan/convert.html"
       title="Sidebar Navigation"
     ></iframe>
     <main class="app-main">
@@ -955,9 +1013,32 @@
     </div>
   </div>
 
+  <div class="modal-backdrop" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+    <div class="modal" style="width: min(520px, 100%);">
+      <div class="modal-header">
+        <h3 id="deleteModalTitle">Konfirmasi Hapus Item</h3>
+        <button class="close-btn" id="closeDeleteModalBtn" type="button" aria-label="Tutup modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="deleteModalMessage">Item ini akan dihapus dari hasil convert.</p>
+        <div class="modal-actions">
+          <button class="modal-cancel-btn" id="cancelDeleteBtn" type="button">Batal</button>
+          <button class="modal-delete-btn" id="confirmDeleteBtn" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 7h14M10 11v6M14 11v6M8 7l1-3h6l1 3M7 7l1 14h8l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            Hapus
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
+    const PROJECT_STORAGE_KEY = "review-harga-satuan-projects";
+    const PROJECT_FLOW_KEY = "review-harga-satuan-project-flow";
     const stages = [
       { key: "draft", title: "Draft", date: "20 Apr 2025" },
       { key: "verifikasi", title: "Verifikasi", date: "21 Apr 2025" },
@@ -1000,7 +1081,17 @@
     const state = {
       stage: "convert_rab",
       filterMode: "all",
-      items: [...initialItems]
+      items: [...initialItems],
+      pendingDeleteKode: null
+    };
+
+    const pageParams = new URLSearchParams(window.location.search);
+    const projectData = {
+      id: pageParams.get("id") || "RVS-2025-000123",
+      project: pageParams.get("project") || document.getElementById("projectName").value.trim(),
+      school: pageParams.get("school") || document.getElementById("schoolName").value.trim(),
+      location: pageParams.get("location") || document.getElementById("location").value.trim(),
+      status: pageParams.get("status") || "Siap Convert"
     };
 
     const els = {
@@ -1015,8 +1106,145 @@
       totalSelisihText: document.getElementById("totalSelisihText"),
       detailModal: document.getElementById("detailModal"),
       modalContent: document.getElementById("modalContent"),
+      deleteModal: document.getElementById("deleteModal"),
+      deleteModalMessage: document.getElementById("deleteModalMessage"),
       toast: document.getElementById("toast")
     };
+
+    function readStoredProjects() {
+      try {
+        return JSON.parse(window.localStorage.getItem(PROJECT_STORAGE_KEY) || "[]");
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function writeStoredProjects(projects) {
+      window.localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(projects));
+    }
+
+    function readProjectFlowStore() {
+      try {
+        return JSON.parse(window.localStorage.getItem(PROJECT_FLOW_KEY) || "{}");
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function writeProjectFlowStore(store) {
+      window.localStorage.setItem(PROJECT_FLOW_KEY, JSON.stringify(store));
+    }
+
+    function updateProjectListStatus(status, stage) {
+      const projects = readStoredProjects();
+      const idx = projects.findIndex(project => project.id === projectData.id);
+      if (idx < 0) return;
+      projects[idx] = {
+        ...projects[idx],
+        project: projectData.project,
+        school: projectData.school,
+        location: projectData.location,
+        status: status || projects[idx].status,
+        stage: stage || projects[idx].stage
+      };
+      writeStoredProjects(projects);
+    }
+
+    function hydrateFromFlowStore() {
+      const flow = readProjectFlowStore()[projectData.id];
+      if (!flow) {
+        document.getElementById("projectIdLabel").textContent = projectData.id;
+        document.getElementById("projectName").value = projectData.project;
+        document.getElementById("schoolName").value = projectData.school;
+        document.getElementById("location").value = projectData.location;
+        return;
+      }
+
+      if (flow.project) projectData.project = flow.project;
+      if (flow.school) projectData.school = flow.school;
+      if (flow.location) {
+        projectData.location = [flow.location, flow.locationDetail || ""].filter(Boolean).join(", ");
+      }
+
+      document.getElementById("projectIdLabel").textContent = projectData.id;
+      document.getElementById("projectName").value = projectData.project;
+      document.getElementById("schoolName").value = projectData.school;
+      document.getElementById("location").value = projectData.location;
+      if (flow.programYear) document.getElementById("programYear").value = flow.programYear;
+      if (flow.rabFile) document.getElementById("sourceFile").value = flow.rabFile;
+      if (flow.step3?.convertDateLabel) document.getElementById("convertDate").value = flow.step3.convertDateLabel;
+      if (Array.isArray(flow.step3?.items) && flow.step3.items.length) {
+        state.items = flow.step3.items.map(item => ({ ...item }));
+      }
+    }
+
+    function persistConvertFlow(nextStage) {
+      const flowStore = readProjectFlowStore();
+      const previousFlow = flowStore[projectData.id] || {};
+      flowStore[projectData.id] = {
+        ...previousFlow,
+        id: projectData.id,
+        project: document.getElementById("projectName").value.trim(),
+        school: document.getElementById("schoolName").value.trim(),
+        location: document.getElementById("location").value.trim(),
+        programYear: document.getElementById("programYear").value.trim(),
+        rabFile: document.getElementById("sourceFile").value.trim(),
+        stage: nextStage || "convert_rab",
+        status: nextStage === "review_material" ? "Review Harga Material" : (previousFlow.status || projectData.status),
+        step3: {
+          items: state.items.map(item => ({ ...item })),
+          convertDateLabel: document.getElementById("convertDate").value.trim(),
+          updatedAt: new Date().toISOString(),
+          completed: true
+        }
+      };
+      writeProjectFlowStore(flowStore);
+      updateProjectListStatus(flowStore[projectData.id].status, flowStore[projectData.id].stage);
+    }
+
+    function buildVerificationUrl() {
+      const params = new URLSearchParams({
+        id: projectData.id,
+        project: document.getElementById("projectName").value.trim(),
+        school: document.getElementById("schoolName").value.trim(),
+        location: document.getElementById("location").value.trim(),
+        status: "Dalam Review"
+      });
+      return `verifikasi.html?${params.toString()}`;
+    }
+
+    function buildReviewMaterialUrl() {
+      const params = new URLSearchParams({
+        id: projectData.id,
+        project: document.getElementById("projectName").value.trim(),
+        school: document.getElementById("schoolName").value.trim(),
+        location: document.getElementById("location").value.trim(),
+        status: "Review Harga Material"
+      });
+      return `review-harga-material.html?${params.toString()}`;
+    }
+
+    function buildConvertDetailUrl(kode) {
+      const item = state.items.find(entry => entry.kode === kode);
+      if (!item) return "convert-detail.html";
+
+      const params = new URLSearchParams({
+        id: projectData.id,
+        project: document.getElementById("projectName").value.trim(),
+        school: document.getElementById("schoolName").value.trim(),
+        location: document.getElementById("location").value.trim(),
+        status: projectData.status || "Siap Convert",
+        stage: state.stage || "convert_rab",
+        kode: item.kode,
+        item: item.item,
+        proposal: String(item.proposal),
+        convert: String(item.convert),
+        selisih: String(getSelisih(item)),
+        components: JSON.stringify(item.components || [])
+      });
+
+      return `convert-detail.html?${params.toString()}`;
+    }
 
     function renderStepper(activeKey) {
       const activeIndex = Math.max(0, stages.findIndex(stage => stage.key === activeKey));
@@ -1096,10 +1324,14 @@
           <td class="numeric">${formatIdr(item.convert)}</td>
           <td class="numeric ${selisih < 0 ? "text-red" : "text-green"}">${formatIdr(selisih)}</td>
           <td class="center">
-            <button class="detail-btn" type="button" data-kode="${item.kode}">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" stroke-width="2" /><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" /></svg>
-              Detail
-            </button>
+            <div class="action-buttons">
+              <button class="detail-btn" type="button" data-kode="${item.kode}" title="Detail" aria-label="Detail">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" stroke-width="2" /><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" /></svg>
+              </button>
+              <button class="delete-btn" type="button" data-delete-kode="${item.kode}" title="Delete" aria-label="Delete">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 7h14M10 11v6M14 11v6M8 7l1-3h6l1 3M7 7l1 14h8l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </button>
+            </div>
           </td>
         `;
         els.tableBody.insertBefore(row, groupRow.nextSibling);
@@ -1127,6 +1359,10 @@
         button.addEventListener("click", () => openDetail(button.dataset.kode));
       });
 
+      document.querySelectorAll(".delete-btn").forEach(button => {
+        button.addEventListener("click", () => openDeleteModal(button.dataset.deleteKode));
+      });
+
       updateSummaryCards();
     }
 
@@ -1147,19 +1383,41 @@
     }
 
     function openDetail(kode) {
+      window.location.href = buildConvertDetailUrl(kode);
+    }
+
+    function openDeleteModal(kode) {
       const item = state.items.find(entry => entry.kode === kode);
       if (!item) return;
-      const selisih = getSelisih(item);
-      els.modalContent.innerHTML = `
-        <div class="modal-field"><small>Kode</small><strong>${item.kode}</strong></div>
-        <div class="modal-field"><small>Status Selisih</small><strong class="${selisih < 0 ? "text-red" : "text-green"}">${selisih < 0 ? "Nilai convert lebih besar" : "Nilai proposal lebih besar"}</strong></div>
-        <div class="modal-field" style="grid-column: 1 / -1;"><small>Item Pekerjaan</small><strong>${item.item}</strong></div>
-        <div class="modal-field"><small>Nilai Proposal</small><strong class="text-blue">${formatIdr(item.proposal)}</strong></div>
-        <div class="modal-field"><small>Nilai Convert</small><strong class="text-green">${formatIdr(item.convert)}</strong></div>
-        <div class="modal-field"><small>Selisih</small><strong class="${selisih < 0 ? "text-red" : "text-orange"}">${formatIdr(selisih)}</strong></div>
-        <div class="modal-field"><small>Komponen</small><strong>${item.components.join(", ")}</strong></div>
-      `;
-      els.detailModal.classList.add("show");
+      state.pendingDeleteKode = kode;
+      els.deleteModalMessage.textContent = `Item pekerjaan "${item.item}" akan dihapus dari hasil convert. Tindakan ini tidak bisa dibatalkan.`;
+      els.deleteModal.classList.add("show");
+    }
+
+    function closeDeleteModal() {
+      state.pendingDeleteKode = null;
+      els.deleteModal.classList.remove("show");
+    }
+
+    function deleteItem() {
+      const kode = state.pendingDeleteKode;
+      const item = state.items.find(entry => entry.kode === kode);
+      if (!item) {
+        closeDeleteModal();
+        return;
+      }
+
+      state.items = state.items
+        .filter(entry => entry.kode !== kode)
+        .map((entry, index) => ({
+          ...entry,
+          kode: String.fromCharCode(65 + index)
+        }));
+
+      closeDeleteModal();
+      persistConvertFlow("convert_rab");
+      renderTable();
+      showToast(`Item pekerjaan "${item.item}" berhasil dihapus.`);
     }
 
     function exportConvertResult() {
@@ -1225,6 +1483,7 @@
         components: ["Komponen baru"]
       };
       state.items.push(newItem);
+      persistConvertFlow("convert_rab");
       renderTable();
       showToast(`Item pekerjaan "${kode}" berhasil ditambahkan.`);
     }
@@ -1243,9 +1502,13 @@
     }
 
     function goNextStage() {
+      persistConvertFlow("review_material");
       state.stage = "review_material";
       renderStepper(state.stage);
       showToast("Pipeline dipindahkan ke stage Review Harga Material.");
+      window.setTimeout(() => {
+        window.location.href = buildReviewMaterialUrl();
+      }, 240);
     }
 
     function showToast(message) {
@@ -1258,14 +1521,24 @@
     document.getElementById("nextStageBtn").addEventListener("click", goNextStage);
     document.getElementById("addItemBtn").addEventListener("click", addItem);
     document.getElementById("filterBtn").addEventListener("click", cycleFilter);
-    document.getElementById("backBtn").addEventListener("click", () => showToast("Tombol kembali aktif. Hubungkan ke route detail proyek di aplikasi kamu."));
+    document.getElementById("backBtn").addEventListener("click", () => {
+      persistConvertFlow("convert_rab");
+      window.location.href = buildVerificationUrl();
+    });
     document.getElementById("closeModalBtn").addEventListener("click", () => els.detailModal.classList.remove("show"));
     els.detailModal.addEventListener("click", event => {
       if (event.target === els.detailModal) els.detailModal.classList.remove("show");
     });
+    document.getElementById("closeDeleteModalBtn").addEventListener("click", closeDeleteModal);
+    document.getElementById("cancelDeleteBtn").addEventListener("click", closeDeleteModal);
+    document.getElementById("confirmDeleteBtn").addEventListener("click", deleteItem);
+    els.deleteModal.addEventListener("click", event => {
+      if (event.target === els.deleteModal) closeDeleteModal();
+    });
     els.searchInput.addEventListener("input", renderTable);
     window.addEventListener("resize", () => renderStepper(state.stage));
 
+    hydrateFromFlowStore();
     renderStepper(state.stage);
     renderTable();
   </script>

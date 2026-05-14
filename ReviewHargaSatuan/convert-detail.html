@@ -829,7 +829,7 @@
   <div class="app-shell">
     <iframe
       class="sidebar-frame"
-      src="../sidebar.html?page=ReviewHargaSatuan/daftar.html"
+      src="../sidebar.html?page=ReviewHargaSatuan/convert-detail.html"
       title="Sidebar Navigation"
     ></iframe>
     <main class="app-main">
@@ -954,7 +954,32 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const STORAGE_KEY = "agrinas_convert_detail_state_v1";
+    const BASE_STORAGE_KEY = "agrinas_convert_detail_state_v1";
+    const pageParams = new URLSearchParams(window.location.search);
+    const projectData = {
+      id: pageParams.get("id") || "RVS-2025-000123",
+      project: pageParams.get("project") || "Convert RAB",
+      school: pageParams.get("school") || "",
+      location: pageParams.get("location") || "",
+      status: pageParams.get("status") || "Siap Convert",
+      stage: pageParams.get("stage") || "convert_rab"
+    };
+    const detailSeed = {
+      kode: pageParams.get("kode") || "A",
+      item: pageParams.get("item") || "Rehabilitasi Ruang Kelas 8 Lokal (Lokasi B)",
+      proposal: Number(pageParams.get("proposal") || 0),
+      convert: Number(pageParams.get("convert") || 0),
+      selisih: Number(pageParams.get("selisih") || 0),
+      components: (() => {
+        try {
+          const parsed = JSON.parse(pageParams.get("components") || "[]");
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (error) {
+          return [];
+        }
+      })()
+    };
+    const STORAGE_KEY = `${BASE_STORAGE_KEY}:${projectData.id}:${detailSeed.kode}`;
     const stages = [
       { key: "draft", title: "Draft", date: "20 Apr 2025" },
       { key: "verifikasi", title: "Verifikasi", date: "21 Apr 2025" },
@@ -964,7 +989,7 @@
     ];
 
     const state = {
-      stage: "convert_rab",
+      stage: projectData.stage,
       groups: []
     };
 
@@ -979,6 +1004,41 @@
       toast: document.getElementById("toast"),
       statusBadge: document.getElementById("statusBadge")
     };
+
+    function buildConvertUrl() {
+      const params = new URLSearchParams({
+        id: projectData.id,
+        project: projectData.project,
+        school: projectData.school,
+        location: projectData.location,
+        status: projectData.status
+      });
+      return `./convert.html?${params.toString()}`;
+    }
+
+    function buildSeedGroups() {
+      const components = detailSeed.components.length
+        ? detailSeed.components
+        : ["Komponen pekerjaan"];
+      const totalConvert = Number(detailSeed.convert || 0);
+      const pricePerComponent = components.length ? totalConvert / components.length : totalConvert;
+
+      return [{
+        code: "I",
+        title: detailSeed.item,
+        items: components.map(name => ({
+          name: String(name),
+          volume: 1,
+          unit: "ls",
+          price: pricePerComponent
+        }))
+      }];
+    }
+
+    function hydratePageContext() {
+      document.getElementById("locationName").value = detailSeed.item;
+      document.title = `${detailSeed.kode} - Detail Rekapitulasi`;
+    }
 
     function renderStepper(activeKey) {
       const activeIndex = Math.max(0, stages.findIndex(stage => stage.key === activeKey));
@@ -1277,7 +1337,12 @@
 
     function restoreState() {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
+      if (!raw) {
+        state.groups = buildSeedGroups();
+        hydratePageContext();
+        persistState();
+        return;
+      }
       try {
         const parsed = JSON.parse(raw);
         if (parsed && Array.isArray(parsed.groups)) {
@@ -1295,8 +1360,13 @@
         if (parsed && typeof parsed.locationName === "string") {
           document.getElementById("locationName").value = parsed.locationName;
         }
+        if (!document.getElementById("locationName").value.trim()) {
+          hydratePageContext();
+        }
       } catch (error) {
         console.error("Gagal memuat data convert detail dari localStorage", error);
+        state.groups = buildSeedGroups();
+        hydratePageContext();
       }
     }
 
@@ -1394,7 +1464,7 @@
     }
 
     document.getElementById("backBtn").addEventListener("click", () => {
-      window.location.href = "./convert.html";
+      window.location.href = buildConvertUrl();
     });
     document.getElementById("draftBtn").addEventListener("click", saveDraft);
     document.getElementById("saveBtn").addEventListener("click", saveChanges);
@@ -1417,6 +1487,7 @@
     });
     window.addEventListener("resize", () => renderStepper(state.stage));
 
+    hydratePageContext();
     restoreState();
     renderStepper(state.stage);
     renderTable();

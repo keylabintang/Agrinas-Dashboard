@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laporan Review Harga Satuan</title>
+  <style>
+    :root {
+      --navy: #08195a;
+      --blue: #0b4adf;
+      --text: #14245c;
+      --muted: #647296;
+      --placeholder: #9aa6bf;
+      --line: #e1e7f1;
+      --soft-line: #edf2f8;
+      --green: #09a63a;
+      --green-dark: #009b34;
+      --bg: #ffffff;
+      --shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+      --soft-shadow: 0 8px 18px rgba(15, 23, 42, 0.045);
+      --radius-lg: 14px;
+      --radius-md: 9px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f3f6fb;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input,
+    select {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar-frame {
+      width: 320px;
+      min-width: 320px;
+      height: 100vh;
+      border: 0;
+      background: #fff;
+      position: sticky;
+      top: 0;
+    }
+
+    .app-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .page {
+      width: min(1520px, calc(100% - 68px));
+      margin: 25px auto 40px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: var(--blue);
+      font-size: 17px;
+      font-weight: 650;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .breadcrumb svg {
+      color: var(--blue);
+      flex: 0 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 28px;
+      margin-bottom: 34px;
+    }
+
+    .title-wrap {
+      flex: 1;
+      min-width: 0;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 40px;
+      line-height: 1.05;
+      letter-spacing: -0.045em;
+      font-weight: 880;
+    }
+
+    .subtitle {
+      margin: 12px 0 0;
+      color: #54618a;
+      font-size: 18px;
+      line-height: 1.45;
+      font-weight: 520;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 68px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      height: 51px;
+      border-radius: 8px;
+      border: 1px solid #dbe2ed;
+      background: #fff;
+      color: var(--navy);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 11px;
+      padding: 0 20px;
+      font-size: 15px;
+      font-weight: 820;
+      white-space: nowrap;
+      box-shadow: var(--soft-shadow);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .btn:hover,
+    .detail-btn:hover,
+    .page-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 13px 26px rgba(15, 23, 42, 0.085);
+    }
+
+    .btn-filter {
+      min-width: 150px;
+      color: #1838d5;
+      border: 1px solid #1838d5;
+      background: #fff;
+    }
+
+    .btn-date {
+      min-width: 240px;
+      color: var(--navy);
+      border-color: #d6deeb;
+      font-weight: 700;
+    }
+
+    .province-filter {
+      min-width: 220px;
+      height: 51px;
+      border: 1px solid #d6deeb;
+      border-radius: 8px;
+      background-color: #fff;
+      color: var(--navy);
+      padding: 0 42px 0 16px;
+      font-size: 15px;
+      font-weight: 700;
+      outline: none;
+      appearance: none;
+      box-shadow: var(--soft-shadow);
+      background-image: linear-gradient(45deg, transparent 50%, #162858 50%), linear-gradient(135deg, #162858 50%, transparent 50%);
+      background-position: calc(100% - 22px) 21px, calc(100% - 15px) 21px;
+      background-size: 7px 7px, 7px 7px;
+      background-repeat: no-repeat;
+    }
+
+    .province-filter:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(11, 74, 223, 0.1);
+    }
+
+    .search-wrap {
+      margin-bottom: 24px;
+    }
+
+    .search-box {
+      height: 58px;
+      width: 100%;
+      border: 1px solid #dbe3ef;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 20px;
+      color: #7180a3;
+      background: #fff;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .search-box input {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      outline: 0;
+      color: var(--navy);
+      background: transparent;
+      font-size: 16px;
+      font-weight: 520;
+    }
+
+    .search-box input::placeholder {
+      color: var(--placeholder);
+      opacity: 1;
+    }
+
+    .table-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 960px;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    thead th {
+      height: 56px;
+      padding: 0 24px;
+      color: var(--navy);
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      font-size: 15px;
+      font-weight: 850;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    thead th.center,
+    tbody td.center {
+      text-align: center;
+    }
+
+    tbody td {
+      height: 58px;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--soft-line);
+      color: #0d2382;
+      font-size: 15px;
+      font-weight: 560;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    tbody tr.hidden {
+      display: none;
+    }
+
+    .detail-btn {
+      height: 42px;
+      min-width: 101px;
+      border: 1px solid rgba(8, 166, 58, 0.42);
+      border-radius: 8px;
+      background: #fff;
+      color: #08a63a;
+      font-size: 14px;
+      font-weight: 820;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .detail-btn:hover {
+      background: #f5fff8;
+    }
+
+    .footer {
+      min-height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 20px 24px;
+      color: #52618c;
+      font-size: 16px;
+      font-weight: 620;
+    }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: #6d7898;
+    }
+
+    .page-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: 0;
+      background: transparent;
+      color: #657296;
+      font-size: 16px;
+      font-weight: 620;
+      padding: 0;
+    }
+
+    .page-nav:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .page-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .page-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      border: 1px solid #dfe6f0;
+      color: var(--navy);
+      background: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      font-weight: 700;
+      box-shadow: 0 5px 12px rgba(15, 23, 42, 0.035);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .page-btn.active {
+      color: #fff;
+      border-color: var(--green);
+      background: linear-gradient(180deg, #0fc84a 0%, #05ad3c 48%, #009b34 100%);
+      box-shadow: 0 11px 20px rgba(0, 158, 52, 0.18);
+    }
+
+    .dots {
+      color: var(--navy);
+      font-size: 18px;
+      font-weight: 800;
+      min-width: 28px;
+      text-align: center;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 28px;
+      background: rgba(8, 18, 38, 0.38);
+      z-index: 80;
+    }
+
+    .modal-backdrop.show {
+      display: grid;
+    }
+
+    .modal {
+      width: min(660px, 100%);
+      background: #fff;
+      border: 1px solid #e0e7f0;
+      border-radius: 16px;
+      box-shadow: 0 30px 76px rgba(8, 18, 38, 0.26);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 26px;
+      font-weight: 880;
+      letter-spacing: -0.03em;
+    }
+
+    .close-btn {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      border: 1px solid #d6e0ed;
+      color: var(--navy);
+      background: #fff;
+    }
+
+    .modal-body {
+      padding: 28px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .detail-field {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fbfcff;
+    }
+
+    .detail-field.full {
+      grid-column: 1 / -1;
+    }
+
+    .detail-field small {
+      display: block;
+      margin-bottom: 8px;
+      color: #61708d;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .detail-field strong {
+      display: block;
+      color: var(--navy);
+      font-size: 18px;
+      line-height: 1.4;
+      font-weight: 820;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 28px;
+      bottom: 28px;
+      max-width: 430px;
+      min-width: 280px;
+      padding: 15px 18px;
+      color: #07356f;
+      background: #eef7ff;
+      border: 1px solid #cae4ff;
+      border-radius: 12px;
+      box-shadow: 0 18px 44px rgba(15, 23, 42, 0.18);
+      font-size: 14px;
+      font-weight: 760;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      z-index: 99;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1060px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar-frame {
+        width: 100%;
+        min-width: 100%;
+        height: 100vh;
+        position: static;
+      }
+
+      .page {
+        width: calc(100% - 32px);
+      }
+
+      .topbar {
+        flex-direction: column;
+      }
+
+      .actions {
+        margin-top: 0;
+        justify-content: flex-start;
+      }
+
+      .footer {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 24px;
+      }
+
+      .pagination {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .breadcrumb {
+        font-size: 15px;
+        gap: 10px;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+
+      .subtitle {
+        font-size: 18px;
+      }
+
+      .btn,
+      .btn-filter,
+      .btn-date,
+      .province-filter {
+        width: 100%;
+      }
+
+      .actions {
+        width: 100%;
+      }
+
+      .search-box {
+        height: 64px;
+      }
+
+      .search-box input {
+        font-size: 17px;
+      }
+
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-group {
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .page-nav {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <iframe
+      class="sidebar-frame"
+      src="../../sidebar.html?page=ReviewHargaSatuan/Laporan/daftar.html"
+      title="Sidebar Navigation"
+    ></iframe>
+    <div class="app-main">
+  <main class="page">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <span>Review Harga Satuan</span>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      <span>Laporan</span>
+    </nav>
+
+    <section class="topbar">
+      <div class="title-wrap">
+        <h1>Laporan Review Harga Satuan</h1>
+        <p class="subtitle">Daftar laporan review harga satuan per kabupaten.</p>
+      </div>
+
+      <div class="actions">
+        <select class="province-filter" id="provinceFilter" aria-label="Filter provinsi">
+          <option value="all">Semua Provinsi</option>
+        </select>
+
+        <button class="btn btn-date" id="dateBtn" type="button">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3v4M17 3v4M4.5 9h15M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+          <span id="dateLabel">1 - 31 Mei 2024</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m7 10 5 5 5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="search-wrap">
+      <label class="search-box" for="searchInput">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2.2" /><path d="m16.3 16.3 4.2 4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
+        <input id="searchInput" type="search" placeholder="Cari nama kabupaten atau provinsi..." autocomplete="off" />
+      </label>
+    </section>
+
+    <section class="table-card" aria-label="Tabel laporan review harga satuan">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Kabupaten</th>
+              <th>Provinsi</th>
+              <th class="center">Tahun</th>
+              <th class="center">Jumlah Sekolah</th>
+              <th class="center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <footer class="footer">
+        <div id="showingInfo">Menampilkan 1 - 9 dari 16 data</div>
+        <nav class="pagination" aria-label="Pagination laporan">
+          <button class="page-nav" id="prevBtn" type="button">
+            <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m15 6-6 6 6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            Sebelumnya
+          </button>
+          <div class="page-group" id="pageGroup"></div>
+          <button class="page-nav" id="nextBtn" type="button">
+            Selanjutnya
+            <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </button>
+        </nav>
+      </footer>
+    </section>
+  </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Detail Laporan</h2>
+        <button class="close-btn" id="closeModalBtn" type="button" aria-label="Tutup modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-grid" id="modalContent"></div>
+        <div class="modal-actions">
+          <button class="btn" id="downloadDetailBtn" type="button">Export Detail</button>
+          <button class="btn btn-filter" id="closeDetailBtn" type="button">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const reports = [
+      { kabupaten: "Wonogiri", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 12 },
+      { kabupaten: "Sukoharjo", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 10 },
+      { kabupaten: "Klaten", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 15 },
+      { kabupaten: "Boyolali", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 11 },
+      { kabupaten: "Magelang", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 20 },
+      { kabupaten: "Purworejo", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 9 },
+      { kabupaten: "Sragen", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 14 },
+      { kabupaten: "Jepara", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 13 },
+      { kabupaten: "Brebes", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 16 },
+      { kabupaten: "Rembang", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 14 },
+      { kabupaten: "Pati", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 15 },
+      { kabupaten: "Kebumen", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 10 },
+      { kabupaten: "Banjarnegara", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 14 },
+      { kabupaten: "Banyumas", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 10 },
+      { kabupaten: "Wonosobo", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 11 },
+      { kabupaten: "Temanggung", provinsi: "Jawa Tengah", tahun: 2025, jumlah: 15 }
+    ];
+
+    const state = {
+      currentPage: 1,
+      perPage: 9,
+      activeFilter: "all",
+      selectedReport: null,
+      dateRange: "1 - 31 Mei 2024"
+    };
+
+    const els = {
+      tableBody: document.getElementById("tableBody"),
+      pageGroup: document.getElementById("pageGroup"),
+      showingInfo: document.getElementById("showingInfo"),
+      prevBtn: document.getElementById("prevBtn"),
+      nextBtn: document.getElementById("nextBtn"),
+      searchInput: document.getElementById("searchInput"),
+      provinceFilter: document.getElementById("provinceFilter"),
+      dateBtn: document.getElementById("dateBtn"),
+      dateLabel: document.getElementById("dateLabel"),
+      modal: document.getElementById("detailModal"),
+      modalContent: document.getElementById("modalContent"),
+      downloadDetailBtn: document.getElementById("downloadDetailBtn"),
+      toast: document.getElementById("toast")
+    };
+
+    function getFilteredReports() {
+      const query = els.searchInput.value.trim().toLowerCase();
+      return reports.filter(report => {
+        const matchSearch = `${report.kabupaten} ${report.provinsi} ${report.tahun}`.toLowerCase().includes(query);
+        const matchFilter = state.activeFilter === "all" || report.provinsi === state.activeFilter;
+        return matchSearch && matchFilter;
+      });
+    }
+
+    function render() {
+      const filtered = getFilteredReports();
+      const totalPages = Math.max(1, Math.ceil(filtered.length / state.perPage));
+      if (state.currentPage > totalPages) state.currentPage = totalPages;
+
+      const start = (state.currentPage - 1) * state.perPage;
+      const end = start + state.perPage;
+      const visible = filtered.slice(start, end);
+
+      els.tableBody.innerHTML = "";
+
+      visible.forEach(report => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${report.kabupaten}</td>
+          <td>${report.provinsi}</td>
+          <td class="center">${report.tahun}</td>
+          <td class="center">${report.jumlah}</td>
+          <td class="center"><button class="detail-btn" type="button" data-kabupaten="${report.kabupaten}">Detail</button></td>
+        `;
+        els.tableBody.appendChild(row);
+      });
+
+      if (!visible.length) {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td colspan="5" class="center" style="height: 120px; color: #647296; font-weight: 700;">Tidak ada laporan yang cocok dengan pencarian.</td>`;
+        els.tableBody.appendChild(row);
+      }
+
+      const shownStart = filtered.length ? start + 1 : 0;
+      const shownEnd = Math.min(end, filtered.length);
+      els.showingInfo.textContent = `Menampilkan ${shownStart} - ${shownEnd} dari ${filtered.length} data`;
+
+      els.prevBtn.disabled = state.currentPage === 1;
+      els.nextBtn.disabled = state.currentPage === totalPages;
+
+      renderPagination(totalPages);
+      bindDetailButtons();
+    }
+
+    function renderPagination(totalPages) {
+      els.pageGroup.innerHTML = "";
+
+      const addPageButton = page => {
+        const btn = document.createElement("button");
+        btn.className = `page-btn${page === state.currentPage ? " active" : ""}`;
+        btn.type = "button";
+        btn.textContent = page;
+        btn.addEventListener("click", () => {
+          state.currentPage = page;
+          render();
+        });
+        els.pageGroup.appendChild(btn);
+      };
+
+      addPageButton(1);
+      if (totalPages >= 2) addPageButton(2);
+      if (totalPages >= 3) addPageButton(3);
+
+      if (totalPages > 4) {
+        const dots = document.createElement("span");
+        dots.className = "dots";
+        dots.textContent = "...";
+        els.pageGroup.appendChild(dots);
+        addPageButton(totalPages);
+      }
+    }
+
+    function bindDetailButtons() {
+      document.querySelectorAll(".detail-btn").forEach(button => {
+        button.addEventListener("click", () => {
+          const report = reports.find(item => item.kabupaten === button.dataset.kabupaten);
+          openDetail(report);
+        });
+      });
+    }
+
+    function openDetail(report) {
+      if (!report) return;
+      const params = new URLSearchParams({
+        kabupaten: report.kabupaten,
+        provinsi: report.provinsi,
+        tahun: String(report.tahun),
+        jumlah: String(report.jumlah),
+        periode: state.dateRange
+      });
+      window.location.href = `detail.html?${params.toString()}`;
+    }
+
+    function closeModal() {
+      els.modal.classList.remove("show");
+    }
+
+    function populateProvinceFilter() {
+      const provinces = [...new Set(reports.map(report => report.provinsi))].sort((a, b) => a.localeCompare(b, "id"));
+      provinces.forEach(provinsi => {
+        const option = document.createElement("option");
+        option.value = provinsi;
+        option.textContent = provinsi;
+        els.provinceFilter.appendChild(option);
+      });
+    }
+
+    function handleProvinceFilter() {
+      state.activeFilter = els.provinceFilter.value;
+      state.currentPage = 1;
+      render();
+      const label = state.activeFilter === "all" ? "Semua Provinsi" : state.activeFilter;
+      showToast(`Filter provinsi aktif: ${label}.`);
+    }
+
+    function cycleDateRange() {
+      const ranges = ["1 - 31 Mei 2024", "1 - 30 Juni 2024", "1 - 31 Juli 2024"];
+      const index = ranges.indexOf(state.dateRange);
+      state.dateRange = ranges[(index + 1) % ranges.length];
+      els.dateLabel.textContent = state.dateRange;
+      showToast(`Periode laporan diubah ke "${state.dateRange}".`);
+    }
+
+    function exportDetail() {
+      if (!state.selectedReport) return;
+      const report = state.selectedReport;
+      const content = [
+        "DETAIL LAPORAN REVIEW HARGA SATUAN",
+        `Kabupaten: ${report.kabupaten}`,
+        `Provinsi: ${report.provinsi}`,
+        `Tahun: ${report.tahun}`,
+        `Jumlah Sekolah: ${report.jumlah}`,
+        `Periode: ${state.dateRange}`
+      ].join("\n");
+      downloadFile(`laporan-${slugify(report.kabupaten)}.txt`, content, "text/plain;charset=utf-8");
+      showToast(`Detail laporan "${report.kabupaten}" berhasil diexport.`);
+    }
+
+    function downloadFile(filename, content, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function slugify(value) {
+      return String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "laporan";
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => els.toast.classList.remove("show"), 2500);
+    }
+
+    els.searchInput.addEventListener("input", () => {
+      state.currentPage = 1;
+      render();
+    });
+
+    els.provinceFilter.addEventListener("change", handleProvinceFilter);
+    els.dateBtn.addEventListener("click", cycleDateRange);
+
+    els.prevBtn.addEventListener("click", () => {
+      if (state.currentPage > 1) {
+        state.currentPage -= 1;
+        render();
+      }
+    });
+
+    els.nextBtn.addEventListener("click", () => {
+      const totalPages = Math.max(1, Math.ceil(getFilteredReports().length / state.perPage));
+      if (state.currentPage < totalPages) {
+        state.currentPage += 1;
+        render();
+      }
+    });
+
+    document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+    document.getElementById("closeDetailBtn").addEventListener("click", closeModal);
+    els.downloadDetailBtn.addEventListener("click", exportDetail);
+
+    els.modal.addEventListener("click", event => {
+      if (event.target === els.modal) closeModal();
+    });
+
+    populateProvinceFilter();
+    render();
+  </script>
+</body>
+</html>
