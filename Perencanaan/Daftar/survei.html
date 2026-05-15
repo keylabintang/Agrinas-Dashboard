@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detail Perencanaan - Survei Lokasi</title>
+  <style>
+    :root {
+      --navy: #07164a;
+      --blue: #066bff;
+      --blue-soft: #eef7ff;
+      --green: #08a63a;
+      --green-dark: #009a34;
+      --gray: #aeb7c7;
+      --gray-soft: #eef2f6;
+      --text: #12245c;
+      --muted: #647392;
+      --line: #dfe7f2;
+      --dash: #a9c8f4;
+      --shadow: 0 15px 36px rgba(15, 23, 42, 0.07);
+      --soft-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+      --radius-lg: 14px;
+      --radius-md: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #ffffff;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font-family: inherit;
+    }
+
+    button,
+    select,
+    input[type="file"] {
+      cursor: pointer;
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+      background: #f3f6fb;
+    }
+
+    .sidebar-frame {
+      width: 320px;
+      min-width: 320px;
+      height: 100vh;
+      border: 0;
+      background: #ffffff;
+      position: sticky;
+      top: 0;
+    }
+
+    .app-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .page {
+      width: min(1000px, calc(100% - 36px));
+      margin: 18px auto 24px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: #17458e;
+      font-size: 13px;
+      font-weight: 650;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .breadcrumb svg {
+      color: #677898;
+      flex: 0 0 auto;
+    }
+
+    .breadcrumb .current {
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .back-row {
+      margin-bottom: 12px;
+    }
+
+    .btn,
+    .back-btn {
+      height: 42px;
+      border-radius: 7px;
+      border: 1px solid #d6e0ed;
+      background: #fff;
+      color: var(--navy);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 0 16px;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+      box-shadow: var(--soft-shadow);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn:hover,
+    .back-btn:hover,
+    .upload-box:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.075);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .title-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 32px;
+      line-height: 1.03;
+      letter-spacing: -0.055em;
+      font-weight: 900;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 27px;
+      padding: 0 10px;
+      border-radius: 6px;
+      color: var(--blue);
+      background: #f0f7ff;
+      border: 1px solid #b9dcff;
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-top: 2px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn-outline-green {
+      min-width: 126px;
+      color: var(--green);
+      border-color: var(--green);
+      background: #fff;
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      min-width: 130px;
+      color: #fff;
+      border-color: var(--green-dark);
+      background: linear-gradient(180deg, #0ac742 0%, #02ad3b 48%, #009a35 100%);
+      box-shadow: 0 13px 24px rgba(0, 150, 52, 0.22);
+    }
+
+    .btn-secondary {
+      min-width: 78px;
+      color: var(--navy);
+      border-color: #cbd6e6;
+      background: #fff;
+      box-shadow: none;
+    }
+
+    .pipeline-card,
+    .form-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .pipeline-card {
+      padding: 16px 42px 15px;
+      margin-bottom: 10px;
+    }
+
+    .stepper {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      position: relative;
+    }
+
+    .stepper::before {
+      content: "";
+      position: absolute;
+      top: 17px;
+      left: 43px;
+      right: 43px;
+      height: 3px;
+      background: #cfd6e2;
+      border-radius: 999px;
+    }
+
+    .step-progress {
+      position: absolute;
+      top: 17px;
+      left: 43px;
+      height: 3px;
+      width: 0;
+      border-radius: 999px;
+      background: var(--green);
+      z-index: 1;
+      transition: width 0.25s ease;
+    }
+
+    .step {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      min-height: 94px;
+    }
+
+    .step-circle {
+      width: 27px;
+      height: 27px;
+      margin: 0 auto 10px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--gray);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.1);
+    }
+
+    .step.done .step-circle,
+    .step.active .step-circle {
+      background: linear-gradient(180deg, #0fc74a 0%, #05ad3c 48%, #009a34 100%);
+    }
+
+    .step-title {
+      color: var(--navy);
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 820;
+      margin-bottom: 9px;
+    }
+
+    .step-status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      padding: 5px 11px;
+      border-radius: 6px;
+      color: #69758b;
+      background: var(--gray-soft);
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    .step.done .step-status,
+    .step.active .step-status {
+      color: var(--green);
+      background: #dff8e7;
+    }
+
+    .step.active .step-status {
+      color: var(--green);
+    }
+
+    .step-date {
+      display: block;
+      margin-top: 9px;
+      color: #4460a8;
+      font-size: 12px;
+      font-weight: 520;
+    }
+
+    .form-card {
+      padding: 14px 16px 12px;
+      position: relative;
+    }
+
+    .section-title {
+      margin: 0 0 6px;
+      color: var(--navy);
+      font-size: 15px;
+      line-height: 1.2;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .info-field {
+      margin-bottom: 10px;
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--navy);
+      font-size: 12px;
+      font-weight: 820;
+    }
+
+    .input,
+    .select,
+    .textarea {
+      width: 100%;
+      border: 1px solid #c6d4e9;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--navy);
+      outline: none;
+      font-size: 12px;
+      font-weight: 620;
+      box-shadow: inset 0 1px 0 rgba(15, 23, 42, 0.02);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .input,
+    .select {
+      height: 34px;
+      padding: 0 12px;
+    }
+
+    .input[readonly] {
+      color: #7180a5;
+      background: #fbfcff;
+      cursor: not-allowed;
+    }
+
+    .select {
+      appearance: none;
+      padding-right: 34px;
+      background-image: linear-gradient(45deg, transparent 50%, #52618c 50%), linear-gradient(135deg, #52618c 50%, transparent 50%);
+      background-position: calc(100% - 18px) 14px, calc(100% - 12px) 14px;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    .textarea {
+      min-height: 91px;
+      padding: 11px 12px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .input:focus,
+    .select:focus,
+    .textarea:focus {
+      border-color: #7ebdff;
+      box-shadow: 0 0 0 4px rgba(6, 107, 255, 0.08);
+    }
+
+    .split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 42px;
+      align-items: start;
+    }
+
+    .upload-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .upload-group .label {
+      margin-bottom: 5px;
+    }
+
+    .upload-box {
+      min-height: 60px;
+      border: 1px dashed var(--dash);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--blue);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 9px 14px;
+      position: relative;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      overflow: hidden;
+    }
+
+    .upload-box:hover {
+      border-color: var(--blue);
+      background: #fbfdff;
+    }
+
+    .upload-box input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .upload-content {
+      display: grid;
+      place-items: center;
+      gap: 2px;
+      pointer-events: none;
+    }
+
+    .upload-main {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .upload-help {
+      color: #5d6d8a;
+      font-size: 10px;
+      font-weight: 520;
+    }
+
+    .file-name {
+      display: none;
+      max-width: 330px;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 780;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .upload-box.has-file {
+      border-style: solid;
+      border-color: rgba(8, 166, 58, 0.45);
+      background: #f8fff9;
+    }
+
+    .upload-box.has-file .file-name {
+      display: block;
+    }
+
+    .right-panel {
+      display: grid;
+      gap: 13px;
+    }
+
+    .note {
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+      padding: 0 12px;
+      border: 1px solid #8bc6ff;
+      border-radius: 6px;
+      background: #f8fcff;
+      color: var(--blue);
+      font-size: 12px;
+      line-height: 1.4;
+      font-weight: 600;
+    }
+
+    .note-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--blue);
+      flex: 0 0 auto;
+    }
+
+    .bottom-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 28px;
+      bottom: 28px;
+      max-width: 430px;
+      min-width: 280px;
+      padding: 15px 18px;
+      color: #07356f;
+      background: #eef7ff;
+      border: 1px solid #cae4ff;
+      border-radius: 12px;
+      box-shadow: 0 18px 44px rgba(15, 23, 42, 0.18);
+      font-size: 14px;
+      font-weight: 760;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      z-index: 99;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 960px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar-frame {
+        width: 100%;
+        min-width: 100%;
+        height: 100vh;
+        position: static;
+      }
+
+      .page {
+        width: calc(100% - 28px);
+      }
+
+      .topbar {
+        flex-direction: column;
+      }
+
+      .top-actions {
+        justify-content: flex-start;
+      }
+
+      .pipeline-card {
+        padding: 19px 20px;
+        overflow-x: auto;
+      }
+
+      .stepper {
+        min-width: 780px;
+      }
+
+      .split-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      h1 {
+        font-size: 31px;
+      }
+
+      .title-line {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-actions,
+      .btn,
+      .back-btn,
+      .btn-outline-green,
+      .btn-primary,
+      .btn-secondary {
+        width: 100%;
+      }
+
+      .form-card {
+        padding: 16px;
+      }
+
+      .bottom-actions {
+        flex-direction: column;
+      }
+
+      .note {
+        align-items: flex-start;
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <iframe
+      class="sidebar-frame"
+      src="../../sidebar.html?page=Perencanaan/Daftar/survei.html"
+      title="Sidebar Navigation"
+    ></iframe>
+
+    <main class="app-main">
+  <div class="page">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <span>Perencanaan</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      <span>Daftar</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      <span class="current">Detail Perencanaan</span>
+    </nav>
+
+    <div class="back-row">
+      <button class="back-btn" id="backBtn" type="button">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        Kembali
+      </button>
+    </div>
+
+    <section class="topbar">
+      <div class="title-line">
+        <h1>Detail Perencanaan</h1>
+        <span class="badge" id="statusBadge">Draft</span>
+      </div>
+
+      <div class="top-actions">
+        <button class="btn btn-outline-green" id="draftBtn" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5h12l2 2v12H5V5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /><path d="M8 5v6h8V5M8 19v-5h8v5" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /></svg>
+          Simpan Draft
+        </button>
+        <button class="btn btn-primary" id="saveBtn" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5h12l2 2v12H5V5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /><path d="M8 5v6h8V5M8 19v-5h8v5" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /></svg>
+          Simpan Perubahan
+        </button>
+      </div>
+    </section>
+
+    <section class="pipeline-card" aria-label="Pipeline perencanaan">
+      <input type="hidden" id="currentStage" value="survei_lokasi" />
+      <div class="stepper" id="stepper">
+        <div class="step-progress" id="stepProgress"></div>
+      </div>
+    </section>
+
+    <section class="form-card">
+      <h2 class="section-title">Informasi Perencanaan</h2>
+
+      <form id="planningForm">
+        <div class="info-field">
+          <label class="label" for="schoolInfo">Info Sekolah</label>
+          <input class="input" id="schoolInfo" name="schoolInfo" type="text" value="" readonly />
+        </div>
+
+        <div class="split-grid">
+          <div class="upload-list">
+            <div class="upload-group">
+              <label class="label" for="sketchFile">Upload Sketsa Lapangan</label>
+              <label class="upload-box" id="sketchBox">
+                <input id="sketchFile" name="sketchFile" type="file" accept="application/pdf,image/jpeg,image/png" />
+                <span class="upload-content">
+                  <span class="upload-main">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 17H6a4 4 0 1 1 .7-7.9A5.6 5.6 0 0 1 17.8 11H18a3 3 0 0 1 0 6h-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" /><path d="M12 12v8M9 15l3-3 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                    Upload file
+                  </span>
+                  <span class="upload-help">PDF, JPG, PNG maks. 10 MB</span>
+                  <span class="file-name" id="sketchName"></span>
+                </span>
+              </label>
+            </div>
+
+            <div class="upload-group">
+              <label class="label" for="photoFile">Upload Dokumentasi Foto</label>
+              <label class="upload-box" id="photoBox">
+                <input id="photoFile" name="photoFile" type="file" accept="image/jpeg,image/png" />
+                <span class="upload-content">
+                  <span class="upload-main">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 17H6a4 4 0 1 1 .7-7.9A5.6 5.6 0 0 1 17.8 11H18a3 3 0 0 1 0 6h-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" /><path d="M12 12v8M9 15l3-3 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                    Upload file
+                  </span>
+                  <span class="upload-help">JPG, PNG maks. 10 MB</span>
+                  <span class="file-name" id="photoName"></span>
+                </span>
+              </label>
+            </div>
+
+            <div class="upload-group">
+              <label class="label" for="assignmentFile">Upload Surat Tugas</label>
+              <label class="upload-box" id="assignmentBox">
+                <input id="assignmentFile" name="assignmentFile" type="file" accept="application/pdf,image/jpeg,image/png" />
+                <span class="upload-content">
+                  <span class="upload-main">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 17H6a4 4 0 1 1 .7-7.9A5.6 5.6 0 0 1 17.8 11H18a3 3 0 0 1 0 6h-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" /><path d="M12 12v8M9 15l3-3 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                    Upload file
+                  </span>
+                  <span class="upload-help">PDF, JPG, PNG maks. 10 MB</span>
+                  <span class="file-name" id="assignmentName"></span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="right-panel">
+            <div class="field">
+              <label class="label" for="surveyDate">Tanggal Survei</label>
+              <input class="input" id="surveyDate" name="surveyDate" type="date" value="" required />
+            </div>
+
+            <div class="field">
+              <label class="label" for="surveyor">Surveyor</label>
+              <select class="select" id="surveyor" name="surveyor" required>
+                <option value="" selected disabled>Pilih surveyor</option>
+                <option value="Andika Pratama">Andika Pratama</option>
+                <option value="Rizky Saputra">Rizky Saputra</option>
+                <option value="Nadia Kirana">Nadia Kirana</option>
+                <option value="Dewi Anggraeni">Dewi Anggraeni</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="label" for="notes">Catatan Surveyor</label>
+              <textarea class="textarea" id="notes" name="notes" required></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="note">
+          <span class="note-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 10v7M12 7h.01" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" /></svg>
+          </span>
+          <span>Lengkapi hasil survei lokasi untuk melanjutkan proses ke tahap DED/CAD.</span>
+        </div>
+
+        <div class="bottom-actions">
+          <button class="btn btn-secondary" id="cancelBtn" type="button">Batal</button>
+          <button class="btn btn-primary" id="nextBtn" type="button">
+            Lanjut ke DED/CAD
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const stages = [
+      { key: "survei_lokasi", title: "Survei Lokasi", date: "24 Mei 2025" },
+      { key: "ded_cad", title: "DED/CAD", date: "-" },
+      { key: "rekap_material", title: "Rekap Harga Material", date: "-" },
+      { key: "penyusunan_rab", title: "Penyusunan RAB", date: "-" }
+    ];
+
+    const initialState = {
+      stage: "survei_lokasi",
+      status: "Draft",
+      surveyDate: "",
+      surveyor: "",
+      notes: "",
+      schoolInfo: ""
+    };
+
+    const state = { ...initialState };
+
+    const els = {
+      stepper: document.getElementById("stepper"),
+      stepProgress: document.getElementById("stepProgress"),
+      currentStage: document.getElementById("currentStage"),
+      statusBadge: document.getElementById("statusBadge"),
+      form: document.getElementById("planningForm"),
+      surveyDate: document.getElementById("surveyDate"),
+      surveyor: document.getElementById("surveyor"),
+      notes: document.getElementById("notes"),
+      sketchFile: document.getElementById("sketchFile"),
+      photoFile: document.getElementById("photoFile"),
+      assignmentFile: document.getElementById("assignmentFile"),
+      sketchBox: document.getElementById("sketchBox"),
+      photoBox: document.getElementById("photoBox"),
+      assignmentBox: document.getElementById("assignmentBox"),
+      sketchName: document.getElementById("sketchName"),
+      photoName: document.getElementById("photoName"),
+      assignmentName: document.getElementById("assignmentName"),
+      toast: document.getElementById("toast")
+    };
+
+    function renderStepper(activeKey) {
+      const activeIndex = Math.max(0, stages.findIndex(stage => stage.key === activeKey));
+      els.stepper.querySelectorAll(".step").forEach(step => step.remove());
+
+      stages.forEach((stage, index) => {
+        const step = document.createElement("div");
+        step.className = "step";
+        if (index < activeIndex) step.classList.add("done");
+        if (index === activeIndex) step.classList.add("active");
+
+        let statusText = "Belum Dimulai";
+        if (index < activeIndex) statusText = "Selesai";
+        if (index === activeIndex) statusText = "Sedang Proses";
+
+        const circleContent = index < activeIndex
+          ? `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 12 4 4 8-9" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" /></svg>`
+          : String(index + 1);
+
+        step.innerHTML = `
+          <div class="step-circle">${circleContent}</div>
+          <div class="step-title">${stage.title}</div>
+          <span class="step-status">${statusText}</span>
+          <span class="step-date">${index <= activeIndex ? stage.date : "-"}</span>
+        `;
+
+        els.stepper.appendChild(step);
+      });
+
+      const maxWidth = els.stepper.clientWidth - 86;
+      const progressWidth = activeIndex === 0 ? maxWidth * 0.08 : maxWidth * (activeIndex / (stages.length - 1));
+      els.stepProgress.style.width = `${progressWidth}px`;
+      els.currentStage.value = activeKey;
+    }
+
+    function syncFileLabel(input, box, label) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+
+      const maxSize = 10 * 1024 * 1024;
+      if (file.size > maxSize) {
+        input.value = "";
+        box.classList.remove("has-file");
+        label.textContent = "";
+        showToast(`File "${file.name}" lebih dari 10 MB. File kegedean, bro.`);
+        return;
+      }
+
+      box.classList.add("has-file");
+      label.textContent = file.name;
+      showToast(`File "${file.name}" berhasil dipilih.`);
+    }
+
+    function saveDraft() {
+      state.status = "Draft";
+      els.statusBadge.textContent = "Draft";
+      showToast("Draft detail perencanaan berhasil disimpan.");
+    }
+
+    function saveChanges() {
+      if (!validateForm(false)) return;
+      state.status = "Draft";
+      els.statusBadge.textContent = "Draft";
+      showToast("Perubahan detail perencanaan berhasil disimpan.");
+    }
+
+    function goNextStage() {
+      if (!validateForm(true)) return;
+      state.stage = "ded_cad";
+      state.status = "Dalam Proses";
+      els.statusBadge.textContent = "Dalam Proses";
+      renderStepper(state.stage);
+      showToast("Data survei lengkap. Lanjut ke tahap DED/CAD.");
+    }
+
+    function validateForm(strictUpload) {
+      if (!els.surveyDate.value) {
+        showToast("Tanggal survei wajib diisi.");
+        els.surveyDate.focus();
+        return false;
+      }
+
+      if (!els.surveyor.value) {
+        showToast("Surveyor wajib dipilih.");
+        els.surveyor.focus();
+        return false;
+      }
+
+      if (!els.notes.value.trim()) {
+        showToast("Catatan surveyor wajib diisi. Jangan biarkan kosong melompong.");
+        els.notes.focus();
+        return false;
+      }
+
+      if (strictUpload && (!els.sketchFile.files.length || !els.photoFile.files.length || !els.assignmentFile.files.length)) {
+        showToast("Upload sketsa, dokumentasi foto, dan surat tugas dulu sebelum lanjut ke DED/CAD.");
+        return false;
+      }
+
+      return true;
+    }
+
+    function resetForm() {
+      document.getElementById("schoolInfo").value = initialState.schoolInfo;
+      els.surveyDate.value = initialState.surveyDate;
+      els.surveyor.value = initialState.surveyor;
+      els.notes.value = initialState.notes;
+      [
+        [els.sketchFile, els.sketchBox, els.sketchName],
+        [els.photoFile, els.photoBox, els.photoName],
+        [els.assignmentFile, els.assignmentBox, els.assignmentName]
+      ].forEach(([input, box, label]) => {
+        input.value = "";
+        box.classList.remove("has-file");
+        label.textContent = "";
+      });
+      state.stage = initialState.stage;
+      state.status = initialState.status;
+      els.statusBadge.textContent = "Draft";
+      renderStepper(state.stage);
+      showToast("Form dikembalikan ke data awal.");
+    }
+
+    function goBack() {
+      showToast("Tombol kembali aktif. Sambungkan ke route daftar perencanaan di aplikasi kamu.");
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => els.toast.classList.remove("show"), 2600);
+    }
+
+    els.sketchFile.addEventListener("change", () => syncFileLabel(els.sketchFile, els.sketchBox, els.sketchName));
+    els.photoFile.addEventListener("change", () => syncFileLabel(els.photoFile, els.photoBox, els.photoName));
+    els.assignmentFile.addEventListener("change", () => syncFileLabel(els.assignmentFile, els.assignmentBox, els.assignmentName));
+
+    document.getElementById("backBtn").addEventListener("click", goBack);
+    document.getElementById("draftBtn").addEventListener("click", saveDraft);
+    document.getElementById("saveBtn").addEventListener("click", saveChanges);
+    document.getElementById("cancelBtn").addEventListener("click", resetForm);
+    document.getElementById("nextBtn").addEventListener("click", goNextStage);
+    window.addEventListener("resize", () => renderStepper(state.stage));
+
+    renderStepper(state.stage);
+  </script>
+</body>
+</html>

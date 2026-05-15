@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Daftar Review Harga Satuan</title>
+  <title>Daftar Perencanaan</title>
   <style>
     :root {
       --navy: #07163d;
@@ -572,6 +572,194 @@
       gap: 10px;
     }
 
+    .modal-card.form-frame-card {
+      width: min(100%, 1220px);
+      max-height: min(94vh, 920px);
+      padding: 0;
+      overflow: auto;
+      gap: 0;
+    }
+
+    .plan-modal-shell {
+      display: grid;
+      gap: 24px;
+      padding: 26px 28px 28px;
+    }
+
+    .plan-modal-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .plan-modal-top-left {
+      display: grid;
+      gap: 18px;
+    }
+
+    .back-pill {
+      height: 52px;
+      padding: 0 22px;
+      border-radius: 12px;
+      border: 1px solid #dce3ef;
+      background: #fff;
+      color: var(--navy);
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 16px;
+      font-weight: 800;
+      box-shadow: var(--soft-shadow);
+      cursor: pointer;
+    }
+
+    .plan-title-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .plan-title {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(34px, 4vw, 56px);
+      line-height: 1.02;
+      letter-spacing: -0.055em;
+      font-weight: 860;
+    }
+
+    .draft-badge {
+      height: 40px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: 1px solid #cfe2ff;
+      background: #f6faff;
+      color: #1676ff;
+      display: inline-flex;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .plan-modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn-ghost-green {
+      min-width: 196px;
+      color: var(--green);
+      border-color: rgba(23, 168, 50, 0.45);
+      background: #fff;
+      box-shadow: 0 10px 22px rgba(17, 159, 43, 0.055);
+    }
+
+    .plan-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: var(--soft-shadow);
+      padding: 28px 32px 30px;
+      display: grid;
+      gap: 24px;
+    }
+
+    .plan-card h3 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 24px;
+      letter-spacing: -0.03em;
+      font-weight: 840;
+    }
+
+    .plan-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 26px 38px;
+    }
+
+    .plan-field {
+      display: grid;
+      gap: 12px;
+    }
+
+    .plan-field label {
+      color: var(--navy);
+      font-size: 15px;
+      font-weight: 780;
+    }
+
+    .plan-input,
+    .plan-select {
+      width: 100%;
+      min-height: 64px;
+      padding: 0 18px;
+      border-radius: 14px;
+      border: 1px solid #d7dfed;
+      background: #fff;
+      color: #23315b;
+      font: inherit;
+      font-size: 16px;
+      font-weight: 650;
+      outline: 0;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    textarea.plan-input {
+      min-height: 112px;
+      padding: 18px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .plan-input:focus,
+    .plan-select:focus {
+      border-color: #1588ff;
+      box-shadow: 0 0 0 4px rgba(21, 136, 255, 0.1);
+    }
+
+    .plan-select {
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, #516181 50%), linear-gradient(135deg, #516181 50%, transparent 50%);
+      background-position: calc(100% - 24px) calc(50% - 3px), calc(100% - 18px) calc(50% - 3px);
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+      padding-right: 44px;
+    }
+
+    .info-note {
+      min-height: 88px;
+      border-radius: 14px;
+      border: 1px solid #cfe2ff;
+      background: linear-gradient(180deg, #f9fbff 0%, #f3f8ff 100%);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: #2268ef;
+      font-size: 15px;
+      font-weight: 640;
+      line-height: 1.55;
+    }
+
+    .info-note-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      color: #fff;
+      background: linear-gradient(180deg, #2e86ff 0%, #135bf5 100%);
+      box-shadow: 0 10px 22px rgba(19, 91, 245, 0.18);
+    }
+
     @media (max-width: 1120px) {
       .app-shell {
         flex-direction: column;
@@ -603,6 +791,19 @@
 
       .table-card {
         overflow-x: auto;
+      }
+
+      .plan-modal-top {
+        flex-direction: column;
+      }
+
+      .plan-modal-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .plan-form-grid {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -644,6 +845,18 @@
         grid-template-columns: 1fr;
       }
 
+      .plan-modal-shell {
+        padding: 18px;
+      }
+
+      .plan-card {
+        padding: 22px 18px;
+      }
+
+      .plan-title {
+        font-size: 38px;
+      }
+
       .table-footer {
         height: auto;
         align-items: flex-start;
@@ -663,7 +876,7 @@
   <div class="app-shell">
     <iframe
       class="sidebar-frame"
-      src="../sidebar.html?page=ReviewHargaSatuan/daftar.html"
+      src="../../sidebar.html?page=Perencanaan/Daftar/daftar.html"
       title="Sidebar Navigation"
     ></iframe>
 
@@ -672,12 +885,12 @@
     <header class="header">
       <div class="heading-block">
         <nav class="breadcrumb" aria-label="breadcrumb">
-          <span>Review Harga Satuan</span>
+          <span>Perencanaan</span>
           <span class="slash">/</span>
           <span class="active">Daftar</span>
         </nav>
-        <h1>Daftar Review Harga Satuan</h1>
-        <p class="subtitle">Daftar sekolah untuk proses review harga satuan</p>
+        <h1>Daftar Perencanaan</h1>
+        <p class="subtitle">Daftar sekolah untuk proses perencanaan</p>
       </div>
 
       <div class="actions">
@@ -685,7 +898,7 @@
           <svg width="27" height="27" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
           </svg>
-          Proyek
+          Tambah Perencanaan
         </button>
 
         <button class="btn btn-filter" type="button" id="filterToggle" aria-expanded="false" aria-controls="filterPanel">
@@ -756,7 +969,7 @@
       </div>
     </section>
 
-    <section class="table-card" aria-label="Daftar review harga satuan">
+    <section class="table-card" aria-label="Daftar perencanaan">
       <table>
         <thead>
           <tr>
@@ -768,8 +981,8 @@
           </tr>
         </thead>
         <tbody id="projectTableBody">
-          <tr data-project="Reviu Renovasi Sekolah 2025" data-school="SDN 1 Rembang" data-location="Rembang, Jawa Tengah" data-status="Draft">
-            <td>Reviu Renovasi Sekolah 2025</td>
+          <tr data-project="Perencanaan Renovasi Sekolah 2025" data-school="SDN 1 Rembang" data-location="Rembang, Jawa Tengah" data-status="Draft">
+            <td>Perencanaan Renovasi Sekolah 2025</td>
             <td>SDN 1 Rembang</td>
             <td>Rembang, Jawa Tengah</td>
             <td><span class="status blue">Draft</span></td>
@@ -784,57 +997,57 @@
               </div>
             </td>
           </tr>
-          <tr data-project="Reviu Renovasi Sekolah Tahap 2" data-school="SMP Negeri 2 Pati" data-location="Pati, Jawa Tengah" data-status="Dalam Review">
-            <td>Reviu Renovasi Sekolah Tahap 2</td>
+          <tr data-project="Perencanaan Renovasi Sekolah Tahap 2" data-school="SMP Negeri 2 Pati" data-location="Pati, Jawa Tengah" data-status="Dalam Review">
+            <td>Perencanaan Renovasi Sekolah Tahap 2</td>
             <td>SMP Negeri 2 Pati</td>
             <td>Pati, Jawa Tengah</td>
             <td><span class="status blue">Dalam Review</span></td>
             <td><div class="action-wrap"><button class="detail-btn detail-link" type="button">Detail</button><button class="delete-btn" type="button" aria-label="Hapus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>
           </tr>
-          <tr data-project="Reviu Pembangunan Sekolah 2025" data-school="SMA Negeri 1 Kudus" data-location="Kudus, Jawa Tengah" data-status="Perlu Revisi">
-            <td>Reviu Pembangunan Sekolah 2025</td>
+          <tr data-project="Perencanaan Pembangunan Sekolah 2025" data-school="SMA Negeri 1 Kudus" data-location="Kudus, Jawa Tengah" data-status="Perlu Revisi">
+            <td>Perencanaan Pembangunan Sekolah 2025</td>
             <td>SMA Negeri 1 Kudus</td>
             <td>Kudus, Jawa Tengah</td>
             <td><span class="status orange">Perlu Revisi</span></td>
             <td><div class="action-wrap"><button class="detail-btn detail-link" type="button">Detail</button><button class="delete-btn" type="button" aria-label="Hapus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>
           </tr>
-          <tr data-project="Reviu Renovasi Sekolah 2025" data-school="SDN 3 Blora" data-location="Blora, Jawa Tengah" data-status="Selesai">
-            <td>Reviu Renovasi Sekolah 2025</td>
+          <tr data-project="Perencanaan Renovasi Sekolah 2025" data-school="SDN 3 Blora" data-location="Blora, Jawa Tengah" data-status="Selesai">
+            <td>Perencanaan Renovasi Sekolah 2025</td>
             <td>SDN 3 Blora</td>
             <td>Blora, Jawa Tengah</td>
             <td><span class="status green">Selesai</span></td>
             <td><div class="action-wrap"><button class="detail-btn detail-link" type="button">Detail</button><button class="delete-btn" type="button" aria-label="Hapus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>
           </tr>
-          <tr data-project="Reviu Renovasi Sekolah Tahap 3" data-school="SMP Negeri 1 Purworejo" data-location="Purworejo, Jawa Tengah" data-status="Dalam Review">
-            <td>Reviu Renovasi Sekolah Tahap 3</td>
+          <tr data-project="Perencanaan Renovasi Sekolah Tahap 3" data-school="SMP Negeri 1 Purworejo" data-location="Purworejo, Jawa Tengah" data-status="Dalam Review">
+            <td>Perencanaan Renovasi Sekolah Tahap 3</td>
             <td>SMP Negeri 1 Purworejo</td>
             <td>Purworejo, Jawa Tengah</td>
             <td><span class="status blue">Dalam Review</span></td>
             <td><div class="action-wrap"><button class="detail-btn detail-link" type="button">Detail</button><button class="delete-btn" type="button" aria-label="Hapus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>
           </tr>
-          <tr data-project="Reviu Pembangunan Sekolah 2025" data-school="SDN 2 Temanggung" data-location="Temanggung, Jawa Tengah" data-status="Perlu Revisi">
-            <td>Reviu Pembangunan Sekolah 2025</td>
+          <tr data-project="Perencanaan Pembangunan Sekolah 2025" data-school="SDN 2 Temanggung" data-location="Temanggung, Jawa Tengah" data-status="Perlu Revisi">
+            <td>Perencanaan Pembangunan Sekolah 2025</td>
             <td>SDN 2 Temanggung</td>
             <td>Temanggung, Jawa Tengah</td>
             <td><span class="status orange">Perlu Revisi</span></td>
             <td><div class="action-wrap"><button class="detail-btn detail-link" type="button">Detail</button><button class="delete-btn" type="button" aria-label="Hapus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>
           </tr>
-          <tr data-project="Reviu Renovasi Sekolah 2025" data-school="SMA Negeri 2 Magelang" data-location="Magelang, Jawa Tengah" data-status="Selesai">
-            <td>Reviu Renovasi Sekolah 2025</td>
+          <tr data-project="Perencanaan Renovasi Sekolah 2025" data-school="SMA Negeri 2 Magelang" data-location="Magelang, Jawa Tengah" data-status="Selesai">
+            <td>Perencanaan Renovasi Sekolah 2025</td>
             <td>SMA Negeri 2 Magelang</td>
             <td>Magelang, Jawa Tengah</td>
             <td><span class="status green">Selesai</span></td>
             <td><div class="action-wrap"><button class="detail-btn detail-link" type="button">Detail</button><button class="delete-btn" type="button" aria-label="Hapus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>
           </tr>
-          <tr data-project="Reviu Pembangunan Ruang Kelas Baru" data-school="SMP Negeri 3 Wonogiri" data-location="Wonogiri, Jawa Tengah" data-status="Draft">
-            <td>Reviu Pembangunan Ruang Kelas Baru</td>
+          <tr data-project="Perencanaan Pembangunan Ruang Kelas Baru" data-school="SMP Negeri 3 Wonogiri" data-location="Wonogiri, Jawa Tengah" data-status="Draft">
+            <td>Perencanaan Pembangunan Ruang Kelas Baru</td>
             <td>SMP Negeri 3 Wonogiri</td>
             <td>Wonogiri, Jawa Tengah</td>
             <td><span class="status gray">Draft</span></td>
             <td><div class="action-wrap"><button class="detail-btn detail-link" type="button">Detail</button><button class="delete-btn" type="button" aria-label="Hapus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>
           </tr>
-          <tr data-project="Reviu Renovasi Sekolah Tahap 2" data-school="SDN 1 Kebumen" data-location="Kebumen, Jawa Tengah" data-status="Dalam Review">
-            <td>Reviu Renovasi Sekolah Tahap 2</td>
+          <tr data-project="Perencanaan Renovasi Sekolah Tahap 2" data-school="SDN 1 Kebumen" data-location="Kebumen, Jawa Tengah" data-status="Dalam Review">
+            <td>Perencanaan Renovasi Sekolah Tahap 2</td>
             <td>SDN 1 Kebumen</td>
             <td>Kebumen, Jawa Tengah</td>
             <td><span class="status blue">Dalam Review</span></td>
@@ -875,16 +1088,16 @@
       <iframe
         class="form-frame"
         id="projectFormFrame"
-        src="detail-draft.html?embed=1&mode=create"
-        title="Form Tambah Proyek"
+        src="tambah-perencanaan.html?embed=1"
+        title="Form Tambah Perencanaan"
       ></iframe>
     </div>
   </div>
 
   <div class="modal" id="deleteConfirmModal" hidden>
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle">
-      <h2 id="deleteConfirmTitle">Hapus proyek?</h2>
-      <p>Data proyek yang dihapus tidak akan tampil lagi di daftar pada browser ini.</p>
+      <h2 id="deleteConfirmTitle">Hapus perencanaan?</h2>
+      <p>Data perencanaan yang dihapus tidak akan tampil lagi di daftar pada browser ini.</p>
       <div class="modal-grid">
         <div class="info-box">
           <span>Nama Proyek</span>
@@ -903,10 +1116,10 @@
   </div>
 
   <script>
-    const PROJECT_STORAGE_KEY = 'review-harga-satuan-projects';
-    const PROJECT_DELETED_KEY = 'review-harga-satuan-deleted-project-ids';
-    const PROJECT_DETAIL_KEY = 'review-harga-satuan-project-details';
-    const PROJECT_FLOW_KEY = 'review-harga-satuan-project-flow';
+    const PROJECT_STORAGE_KEY = 'perencanaan-projects';
+    const PROJECT_DELETED_KEY = 'perencanaan-deleted-project-ids';
+    const PROJECT_DETAIL_KEY = 'perencanaan-project-details';
+    const PROJECT_FLOW_KEY = 'perencanaan-project-flow';
     const searchInput = document.getElementById('searchInput');
     const statusFilter = document.getElementById('statusFilter');
     const locationFilter = document.getElementById('locationFilter');
@@ -1081,6 +1294,60 @@
       modal.hidden = true;
     }
 
+    function createProjectRecord(payload, status) {
+      return {
+        id: payload.id || ('plan-' + Date.now()),
+        project: payload.projectName.trim(),
+        school: payload.schoolName,
+        location: payload.kabupaten + ', ' + payload.province,
+        status
+      };
+    }
+
+    function createProjectDetailRecord(project, payload) {
+      return {
+        id: project.id,
+        project: project.project,
+        school: project.school,
+        address: payload.address.trim(),
+        province: payload.province.trim(),
+        kabupaten: payload.kabupaten.trim(),
+        kecamatan: payload.kecamatan?.trim() || '',
+        surveyor: payload.surveyor,
+        status: project.status
+      };
+    }
+
+    function persistPlanFromPayload(payload, status) {
+      const project = createProjectRecord(payload, status);
+      const storedProjects = getStoredProjects();
+      storedProjects.unshift(project);
+      window.localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(storedProjects));
+
+      const detailStore = getProjectDetailStore();
+      detailStore[project.id] = createProjectDetailRecord(project, payload);
+      setProjectDetailStore(detailStore);
+
+      const flowStore = getProjectFlowStore();
+      flowStore[project.id] = {
+        id: project.id,
+        project: project.project,
+        school: project.school,
+        location: payload.kabupaten.trim(),
+        province: payload.province.trim(),
+        address: payload.address.trim(),
+        kecamatan: payload.kecamatan?.trim() || '',
+        surveyor: payload.surveyor,
+        stage: 'draft',
+        status: project.status
+      };
+      setProjectFlowStore(flowStore);
+
+      closeModal(projectModal);
+      applyFilters();
+      showToast((status === 'Draft' ? 'Draft' : 'Perencanaan') + ' "' + project.project + '" berhasil disimpan.');
+    }
+
     function openDeleteModal(projectData) {
       pendingDeleteProject = projectData;
       deleteProjectName.textContent = projectData.project;
@@ -1121,7 +1388,7 @@
       }
 
       applyFilters();
-      showToast('Proyek untuk ' + schoolName + ' berhasil dihapus.');
+      showToast('Perencanaan untuk ' + schoolName + ' berhasil dihapus.');
     }
 
     function buildStepUrl(row) {
@@ -1136,27 +1403,8 @@
       const stage = flow?.stage || 'draft';
       const params = new URLSearchParams(baseParams);
 
-      if (stage === 'verifikasi') {
-        params.set('stage', 'verifikasi');
-        return 'verifikasi.html?' + params.toString();
-      }
-
-      if (stage === 'convert_rab') {
-        params.set('stage', 'convert_rab');
-        return 'convert.html?' + params.toString();
-      }
-
-      if (stage === 'survey_material' || stage === 'review_material') {
-        params.set('stage', 'review_material');
-        return 'review-harga-material.html?' + params.toString();
-      }
-
-      if (stage === 'review_satuan') {
-        params.set('stage', 'review_satuan');
-        return 'review-harga-satuan.html?' + params.toString();
-      }
-
-      return 'detail-draft.html?' + params.toString();
+      params.set('stage', stage);
+      return 'daftar.html?' + params.toString();
     }
 
     filterToggle.addEventListener('click', () => {
@@ -1190,7 +1438,7 @@
     });
 
     document.getElementById('projectButton').addEventListener('click', () => {
-      projectFormFrame.src = 'detail-draft.html?embed=1&mode=create&t=' + Date.now();
+      projectFormFrame.src = 'tambah-perencanaan.html?embed=1&t=' + Date.now();
       openModal(projectModal);
     });
 
@@ -1242,13 +1490,17 @@
     });
 
     window.addEventListener('message', (event) => {
-      if (event.data?.type !== 'review-project-created') {
+      if (event.data?.type === 'perencanaan-modal-close') {
+        closeModal(projectModal);
         return;
       }
 
-      closeModal(projectModal);
-      applyFilters();
-      showToast('Proyek baru "' + event.data.projectName + '" berhasil disimpan di browser ini.');
+      if (event.data?.type !== 'perencanaan-project-saved' || !event.data.payload) {
+        return;
+      }
+
+      const status = event.data.mode === 'draft' ? 'Draft' : 'Dalam Review';
+      persistPlanFromPayload(event.data.payload, status);
     });
 
     applyFilters();

@@ -77,7 +77,7 @@
   <aside class="w-80 h-screen bg-white border-r border-gray-200 flex flex-col justify-between overflow-y-auto shrink-0" data-purpose="sidebar-navigation" id="sidebar">
     <div class="flex flex-col p-6">
       <div class="flex mb-10 justify-center" data-purpose="brand-logo">
-        <img alt="Agrinas Pangan Logo" class="h-16 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0ugcnOpigWKGO1G2rGCDCPC5Be1Z91Z6D6LVmWQmKBPG6juavFvc6b9YD177ZWjq_Lfmn_A9DKP4796oyTiIFH2_yy4JTNZFhB8NnnSmZpEI-RRINqHYOBYYLsJraS6bVyEiOfx-dndRTBAv_PbhFl76U2QJpf7BBO-iNUGRhDj90umsc_52AliSgLcXHHvSEmdoYzxe4lMq-iCYB33HxCAG4Dw0suA7Bbva76Jz-XpewjOiOAUh9uegIMXsh_Y3AbO1C8A0B8l8lg" />
+        <img alt="Agrinas Pangan Logo" class="h-16 w-auto object-contain" src="Assets/agrinas.png" />
       </div>
 
       <nav class="space-y-4" data-purpose="main-nav">
@@ -133,14 +133,14 @@
             <div class="tree-line-vertical"></div>
             <div class="relative pl-10 py-2 nav-subitem">
               <div class="tree-node top-5"></div>
-              <a class="flex items-center px-4 py-2 rounded-lg text-gray-500 hover:text-gray-700 font-medium nav-link" href="#">
+              <a class="flex items-center px-4 py-2 rounded-lg text-gray-500 hover:text-gray-700 font-medium nav-link" data-page="Perencanaan/Daftar/daftar.html" href="Perencanaan/Daftar/daftar.html" target="_parent">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
                 Daftar
               </a>
             </div>
             <div class="relative pl-10 py-2 nav-subitem">
               <div class="tree-node top-5"></div>
-              <a class="flex items-center px-4 py-2 rounded-lg text-gray-500 hover:text-gray-700 font-medium nav-link" href="#">
+              <a class="flex items-center px-4 py-2 rounded-lg text-gray-500 hover:text-gray-700 font-medium nav-link" data-page="Perencanaan/Laporan/daftar.html" href="#" target="_parent">
                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
                 Laporan
               </a>
@@ -328,6 +328,14 @@
     function resolveActiveLink() {
       const exactMatch = document.querySelector('.nav-link[data-page="' + activePage + '"]');
       if (exactMatch) return exactMatch;
+
+      if (activePage.startsWith('Perencanaan/Laporan/')) {
+        return document.querySelector('.nav-link[data-page="Perencanaan/Laporan/daftar.html"]');
+      }
+
+      if (activePage.startsWith('Perencanaan/')) {
+        return document.querySelector('.nav-link[data-page="Perencanaan/Daftar/daftar.html"]');
+      }
 
       if (activePage.startsWith('ReviewHargaSatuan/Laporan/')) {
         return document.querySelector('.nav-link[data-page="ReviewHargaSatuan/Laporan/daftar.html"]');
